@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 54;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -13,8 +13,6 @@
 		811EA82DDA72740D1CE5EE6F /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DAD920A19676FF58C00868E /* AppViewModel.swift */; };
 		86128E86A0788CF712163B74 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB3A3D8937D033440C803C7 /* ContentView.swift */; };
 		97F52DD1E59018943505AE18 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABCAFEBCE7ED152F4752C65 /* ChatView.swift */; };
-		B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A660903372C2E4FA2CFDFC06 /* DashboardView.swift */; };
-		BA35B4918D36F6304B617A5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7801CCBC59216F26BE18F3 /* Assets.xcassets */; };
 		AA000001AA000001AA000001 /* CLIEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AA000001AA000002 /* CLIEvent.swift */; };
 		AA000002AA000002AA000002 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002AA000002AA000003 /* ChatMessage.swift */; };
 		AA000003AA000003AA000003 /* SessionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000003AA000003AA000004 /* SessionRecord.swift */; };
@@ -45,6 +43,8 @@
 		AA000029AA000029AA000029 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000029AA000029AA000030 /* SessionDetailView.swift */; };
 		AA000030AA000030AA000030 /* SessionsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030AA000030AA000031 /* SessionsViewModelTests.swift */; };
 		AA000031AA000031AA000031 /* SkillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000031AA000031AA000032 /* SkillsView.swift */; };
+		B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A660903372C2E4FA2CFDFC06 /* DashboardView.swift */; };
+		BA35B4918D36F6304B617A5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7801CCBC59216F26BE18F3 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,9 +67,6 @@
 		53D1A85918EB846584354C07 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9A7801CCBC59216F26BE18F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A660903372C2E4FA2CFDFC06 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
-		CEA505924741CE7A0DFBB32F /* ClaudeDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		DCB3A3D8937D033440C803C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA000001AA000001AA000002 /* CLIEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIEvent.swift; sourceTree = "<group>"; };
 		AA000002AA000002AA000003 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
 		AA000003AA000003AA000004 /* SessionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRecord.swift; sourceTree = "<group>"; };
@@ -100,6 +97,9 @@
 		AA000029AA000029AA000030 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		AA000030AA000030AA000031 /* SessionsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModelTests.swift; sourceTree = "<group>"; };
 		AA000031AA000031AA000032 /* SkillsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsView.swift; sourceTree = "<group>"; };
+		CEA505924741CE7A0DFBB32F /* Claude Dashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Claude Dashboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DCB3A3D8937D033440C803C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -139,7 +139,7 @@
 		1BA1E0603DC4CC66ABF8C4C4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				CEA505924741CE7A0DFBB32F /* ClaudeDashboard.app */,
+				CEA505924741CE7A0DFBB32F /* Claude Dashboard.app */,
 				E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */,
 			);
 			name = Products;
@@ -305,7 +305,7 @@
 			packageProductDependencies = (
 			);
 			productName = ClaudeDashboard;
-			productReference = CEA505924741CE7A0DFBB32F /* ClaudeDashboard.app */;
+			productReference = CEA505924741CE7A0DFBB32F /* Claude Dashboard.app */;
 			productType = "com.apple.product-type.application";
 		};
 		83DF443592CBF6C2C3AD03E0 /* ClaudeDashboardTests */ = {
@@ -334,9 +334,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2600;
-				TargetAttributes = {
-				};
+				LastUpgradeCheck = 2630;
 			};
 			buildConfigurationList = C180CE48F3740ABE86CFD0A7 /* Build configuration list for PBXProject "ClaudeDashboard" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -348,7 +346,6 @@
 			);
 			mainGroup = 1DBE00A08F6F08E169638E87;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 54;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -443,6 +440,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -473,9 +471,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -489,6 +489,7 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 6.0;
@@ -499,6 +500,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -529,9 +531,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -552,6 +556,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 6.0;
@@ -564,6 +569,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ClaudeDashboard/ClaudeDashboard.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = ClaudeDashboard/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -580,6 +586,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -598,6 +605,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = ClaudeDashboard/ClaudeDashboard.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = ClaudeDashboard/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -614,6 +622,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

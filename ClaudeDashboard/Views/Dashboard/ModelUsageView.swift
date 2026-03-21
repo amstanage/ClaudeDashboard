@@ -15,7 +15,7 @@ struct ModelUsageView: View {
                 Picker("Period", selection: $period) {
                     Text("7 days").tag(7)
                     Text("30 days").tag(30)
-                }.pickerStyle(.segmented).frame(width: 160)
+                }.pickerStyle(.segmented).labelsHidden().frame(width: 160)
             }
             if data.isEmpty {
                 Text("No usage data").foregroundStyle(.secondary).frame(maxWidth: .infinity, alignment: .center).padding(.vertical, 20)
