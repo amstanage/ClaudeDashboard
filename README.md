@@ -20,7 +20,7 @@ A native macOS app for interacting with Claude Code, featuring a chat interface,
 ## Building
 
 ```bash
-git clone <repo-url>
+git clone <https://github.com/amstanage/ClaudeDashboard>
 cd ClaudeDashboard
 open ClaudeDashboard.xcodeproj
 ```
