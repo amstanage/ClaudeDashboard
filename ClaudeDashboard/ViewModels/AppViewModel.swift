@@ -19,7 +19,7 @@ final class AppViewModel {
         return String(format: "%d:%02d", minutes, seconds)
     }
 
-    func bootstrap() async {
+    @MainActor func bootstrap() async {
         let dbURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("ClaudeDashboard/usage.db")
         do {

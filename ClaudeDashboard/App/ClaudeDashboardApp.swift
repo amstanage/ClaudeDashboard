@@ -8,9 +8,11 @@ struct ClaudeDashboardApp: App {
         WindowGroup {
             ContentView()
                 .environment(appViewModel)
+                .task { await appViewModel.bootstrap() }
         }
         .windowStyle(.hiddenTitleBar)
         .defaultSize(width: 900, height: 700)
         .windowResizability(.contentMinSize)
+        .commands { AppCommands() }
     }
 }

@@ -4,7 +4,6 @@ enum AppTab: String, CaseIterable {
     case chat = "Chat"
     case dashboard = "Dashboard"
     case sessions = "Sessions"
-
     var icon: String {
         switch self {
         case .chat: return "bubble.left.and.bubble.right"
@@ -27,8 +26,7 @@ struct ContentView: View {
                 case .dashboard: DashboardView()
                 case .sessions: SessionsView()
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .frame(minWidth: 800, minHeight: 600)
         .toolbar {
@@ -37,11 +35,40 @@ struct ContentView: View {
                     ForEach(AppTab.allCases, id: \.self) { tab in
                         Label(tab.rawValue, systemImage: tab.icon).tag(tab)
                     }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 300)
+                }.pickerStyle(.segmented).frame(width: 300)
             }
         }
         .background(.ultraThinMaterial)
+        .focusedSceneValue(\.selectedTab, $selectedTab)
+    }
+}
+
+struct AppCommands: Commands {
+    @FocusedBinding(\.selectedTab) var selectedTab
+
+    var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("New Conversation") {
+                NotificationCenter.default.post(name: .newConversation, object: nil)
+            }.keyboardShortcut("n", modifiers: .command)
+            Button("Clear Display") {
+                NotificationCenter.default.post(name: .clearDisplay, object: nil)
+            }.keyboardShortcut("k", modifiers: .command)
+            Divider()
+            Button("Chat") { selectedTab = .chat }.keyboardShortcut("1", modifiers: .command)
+            Button("Dashboard") { selectedTab = .dashboard }.keyboardShortcut("2", modifiers: .command)
+            Button("Sessions") { selectedTab = .sessions }.keyboardShortcut("3", modifiers: .command)
+        }
+    }
+}
+
+struct SelectedTabKey: FocusedValueKey {
+    typealias Value = Binding<AppTab>
+}
+
+extension FocusedValues {
+    var selectedTab: Binding<AppTab>? {
+        get { self[SelectedTabKey.self] }
+        set { self[SelectedTabKey.self] = newValue }
     }
 }
