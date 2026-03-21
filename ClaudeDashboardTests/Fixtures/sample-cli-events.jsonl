@@ -1,0 +1,3 @@
+{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"Hello! How can I help you today?"}],"model":"claude-sonnet-4-6","usage":{"input_tokens":10,"output_tokens":12,"cache_creation_input_tokens":0,"cache_read_input_tokens":5}}}
+{"type":"progress","message":null}
+{"type":"system","message":{"role":"system","content":[{"type":"text","text":"Tool executed successfully"}]}}

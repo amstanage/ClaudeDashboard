@@ -15,6 +15,14 @@
 		97F52DD1E59018943505AE18 /* ChatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ABCAFEBCE7ED152F4752C65 /* ChatView.swift */; };
 		B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A660903372C2E4FA2CFDFC06 /* DashboardView.swift */; };
 		BA35B4918D36F6304B617A5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7801CCBC59216F26BE18F3 /* Assets.xcassets */; };
+		AA000001AA000001AA000001 /* CLIEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000001AA000001AA000002 /* CLIEvent.swift */; };
+		AA000002AA000002AA000002 /* ChatMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000002AA000002AA000003 /* ChatMessage.swift */; };
+		AA000003AA000003AA000003 /* SessionRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000003AA000003AA000004 /* SessionRecord.swift */; };
+		AA000004AA000004AA000004 /* DailyStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000004AA000004AA000005 /* DailyStats.swift */; };
+		AA000005AA000005AA000005 /* CLIEventParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000005AA000005AA000006 /* CLIEventParser.swift */; };
+		AA000006AA000006AA000006 /* CLIEventParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006AA000006AA000007 /* CLIEventParserTests.swift */; };
+		AA000007AA000007AA000007 /* sample-session.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = AA000007AA000007AA000008 /* sample-session.jsonl */; };
+		AA000008AA000008AA000008 /* sample-cli-events.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = AA000008AA000008AA000009 /* sample-cli-events.jsonl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +48,14 @@
 		CEA505924741CE7A0DFBB32F /* ClaudeDashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ClaudeDashboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB3A3D8937D033440C803C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		AA000001AA000001AA000002 /* CLIEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIEvent.swift; sourceTree = "<group>"; };
+		AA000002AA000002AA000003 /* ChatMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatMessage.swift; sourceTree = "<group>"; };
+		AA000003AA000003AA000004 /* SessionRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRecord.swift; sourceTree = "<group>"; };
+		AA000004AA000004AA000005 /* DailyStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyStats.swift; sourceTree = "<group>"; };
+		AA000005AA000005AA000006 /* CLIEventParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIEventParser.swift; sourceTree = "<group>"; };
+		AA000006AA000006AA000007 /* CLIEventParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIEventParserTests.swift; sourceTree = "<group>"; };
+		AA000007AA000007AA000008 /* sample-session.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sample-session.jsonl"; sourceTree = "<group>"; };
+		AA000008AA000008AA000009 /* sample-cli-events.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sample-cli-events.jsonl"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -63,6 +79,7 @@
 			isa = PBXGroup;
 			children = (
 				3F6202F2BAE93C207EB9EAFD /* Fixtures */,
+				AA000006AA000006AA000007 /* CLIEventParserTests.swift */,
 			);
 			path = ClaudeDashboardTests;
 			sourceTree = "<group>";
@@ -104,6 +121,8 @@
 		3F6202F2BAE93C207EB9EAFD /* Fixtures */ = {
 			isa = PBXGroup;
 			children = (
+				AA000007AA000007AA000008 /* sample-session.jsonl */,
+				AA000008AA000008AA000009 /* sample-cli-events.jsonl */,
 			);
 			path = Fixtures;
 			sourceTree = "<group>";
@@ -118,6 +137,7 @@
 		5FA635657F2C1FE8D6BBFB90 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AA000005AA000005AA000006 /* CLIEventParser.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -146,6 +166,10 @@
 		7A17B4EB239FCB21F225E818 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AA000001AA000001AA000002 /* CLIEvent.swift */,
+				AA000002AA000002AA000003 /* ChatMessage.swift */,
+				AA000003AA000003AA000004 /* SessionRecord.swift */,
+				AA000004AA000004AA000005 /* DailyStats.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -215,6 +239,7 @@
 			buildConfigurationList = 4C5B837F9CDBDC823ACD197D /* Build configuration list for PBXNativeTarget "ClaudeDashboardTests" */;
 			buildPhases = (
 				210B03BB8E3F47DFA4703F5D /* Sources */,
+				AA000009AA000009AA000009 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -268,6 +293,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		AA000009AA000009AA000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA000007AA000007AA000007 /* sample-session.jsonl in Resources */,
+				AA000008AA000008AA000008 /* sample-cli-events.jsonl in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -275,6 +309,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA000006AA000006AA000006 /* CLIEventParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +324,11 @@
 				B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */,
 				236564C7C43B27C87EEA94F0 /* SessionsView.swift in Sources */,
 				3D90791EB8B7B1495E48418D /* StatsBarView.swift in Sources */,
+				AA000001AA000001AA000001 /* CLIEvent.swift in Sources */,
+				AA000002AA000002AA000002 /* ChatMessage.swift in Sources */,
+				AA000003AA000003AA000003 /* SessionRecord.swift in Sources */,
+				AA000004AA000004AA000004 /* DailyStats.swift in Sources */,
+				AA000005AA000005AA000005 /* CLIEventParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -444,6 +484,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -451,7 +492,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.alexstanage.ClaudeDashboardTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeDashboard.app/Contents/MacOS/ClaudeDashboard";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Claude Dashboard.app/Contents/MacOS/Claude Dashboard";
 			};
 			name = Release;
 		};
@@ -477,6 +518,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -484,7 +526,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.alexstanage.ClaudeDashboardTests;
 				SDKROOT = macosx;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ClaudeDashboard.app/Contents/MacOS/ClaudeDashboard";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Claude Dashboard.app/Contents/MacOS/Claude Dashboard";
 			};
 			name = Debug;
 		};
