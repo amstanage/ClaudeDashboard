@@ -35,6 +35,12 @@
 		AA000019AA000019AA000019 /* MessageBubbleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000019AA000019AA000020 /* MessageBubbleView.swift */; };
 		AA000020AA000020AA000020 /* MessageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000020AA000020AA000021 /* MessageInputView.swift */; };
 		AA000021AA000021AA000021 /* TerminalDrawerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000021AA000021AA000022 /* TerminalDrawerView.swift */; };
+		AA000022AA000022AA000022 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000022AA000022AA000023 /* DashboardViewModel.swift */; };
+		AA000023AA000023AA000023 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000023AA000023AA000024 /* DashboardViewModelTests.swift */; };
+		AA000024AA000024AA000024 /* UsageHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000024AA000024AA000025 /* UsageHeatmapView.swift */; };
+		AA000025AA000025AA000025 /* WeeklyChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000025AA000025AA000026 /* WeeklyChartView.swift */; };
+		AA000026AA000026AA000026 /* MonthlyTrendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000026AA000026AA000027 /* MonthlyTrendView.swift */; };
+		AA000027AA000027AA000027 /* ModelUsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000027AA000027AA000028 /* ModelUsageView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +86,12 @@
 		AA000019AA000019AA000020 /* MessageBubbleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageBubbleView.swift; sourceTree = "<group>"; };
 		AA000020AA000020AA000021 /* MessageInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageInputView.swift; sourceTree = "<group>"; };
 		AA000021AA000021AA000022 /* TerminalDrawerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalDrawerView.swift; sourceTree = "<group>"; };
+		AA000022AA000022AA000023 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		AA000023AA000023AA000024 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
+		AA000024AA000024AA000025 /* UsageHeatmapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsageHeatmapView.swift; sourceTree = "<group>"; };
+		AA000025AA000025AA000026 /* WeeklyChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyChartView.swift; sourceTree = "<group>"; };
+		AA000026AA000026AA000027 /* MonthlyTrendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyTrendView.swift; sourceTree = "<group>"; };
+		AA000027AA000027AA000028 /* ModelUsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelUsageView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -88,6 +100,7 @@
 			children = (
 				4DAD920A19676FF58C00868E /* AppViewModel.swift */,
 				AA000017AA000017AA000018 /* ChatViewModel.swift */,
+				AA000022AA000022AA000023 /* DashboardViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -108,6 +121,7 @@
 				AA000012AA000012AA000013 /* JSONLReaderTests.swift */,
 				AA000013AA000013AA000014 /* DatabaseServiceTests.swift */,
 				AA000018AA000018AA000019 /* ChatViewModelTests.swift */,
+				AA000023AA000023AA000024 /* DashboardViewModelTests.swift */,
 			);
 			path = ClaudeDashboardTests;
 			sourceTree = "<group>";
@@ -194,6 +208,10 @@
 			isa = PBXGroup;
 			children = (
 				A660903372C2E4FA2CFDFC06 /* DashboardView.swift */,
+				AA000024AA000024AA000025 /* UsageHeatmapView.swift */,
+				AA000025AA000025AA000026 /* WeeklyChartView.swift */,
+				AA000026AA000026AA000027 /* MonthlyTrendView.swift */,
+				AA000027AA000027AA000028 /* ModelUsageView.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -349,6 +367,7 @@
 				AA000012AA000012AA000012 /* JSONLReaderTests.swift in Sources */,
 				AA000013AA000013AA000013 /* DatabaseServiceTests.swift in Sources */,
 				AA000018AA000018AA000018 /* ChatViewModelTests.swift in Sources */,
+				AA000023AA000023AA000023 /* DashboardViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,6 +396,11 @@
 				AA000019AA000019AA000019 /* MessageBubbleView.swift in Sources */,
 				AA000020AA000020AA000020 /* MessageInputView.swift in Sources */,
 				AA000021AA000021AA000021 /* TerminalDrawerView.swift in Sources */,
+				AA000022AA000022AA000022 /* DashboardViewModel.swift in Sources */,
+				AA000024AA000024AA000024 /* UsageHeatmapView.swift in Sources */,
+				AA000025AA000025AA000025 /* WeeklyChartView.swift in Sources */,
+				AA000026AA000026AA000026 /* MonthlyTrendView.swift in Sources */,
+				AA000027AA000027AA000027 /* ModelUsageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
