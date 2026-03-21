@@ -23,6 +23,10 @@
 		AA000006AA000006AA000006 /* CLIEventParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000006AA000006AA000007 /* CLIEventParserTests.swift */; };
 		AA000007AA000007AA000007 /* sample-session.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = AA000007AA000007AA000008 /* sample-session.jsonl */; };
 		AA000008AA000008AA000008 /* sample-cli-events.jsonl in Resources */ = {isa = PBXBuildFile; fileRef = AA000008AA000008AA000009 /* sample-cli-events.jsonl */; };
+		AA000010AA000010AA000010 /* JSONLReader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000010AA000010AA000011 /* JSONLReader.swift */; };
+		AA000011AA000011AA000011 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000011AA000011AA000012 /* DatabaseService.swift */; };
+		AA000012AA000012AA000012 /* JSONLReaderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000012AA000012AA000013 /* JSONLReaderTests.swift */; };
+		AA000013AA000013AA000013 /* DatabaseServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000013AA000013AA000014 /* DatabaseServiceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +60,10 @@
 		AA000006AA000006AA000007 /* CLIEventParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CLIEventParserTests.swift; sourceTree = "<group>"; };
 		AA000007AA000007AA000008 /* sample-session.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sample-session.jsonl"; sourceTree = "<group>"; };
 		AA000008AA000008AA000009 /* sample-cli-events.jsonl */ = {isa = PBXFileReference; lastKnownFileType = text; path = "sample-cli-events.jsonl"; sourceTree = "<group>"; };
+		AA000010AA000010AA000011 /* JSONLReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONLReader.swift; sourceTree = "<group>"; };
+		AA000011AA000011AA000012 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
+		AA000012AA000012AA000013 /* JSONLReaderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JSONLReaderTests.swift; sourceTree = "<group>"; };
+		AA000013AA000013AA000014 /* DatabaseServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseServiceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -80,6 +88,8 @@
 			children = (
 				3F6202F2BAE93C207EB9EAFD /* Fixtures */,
 				AA000006AA000006AA000007 /* CLIEventParserTests.swift */,
+				AA000012AA000012AA000013 /* JSONLReaderTests.swift */,
+				AA000013AA000013AA000014 /* DatabaseServiceTests.swift */,
 			);
 			path = ClaudeDashboardTests;
 			sourceTree = "<group>";
@@ -138,6 +148,8 @@
 			isa = PBXGroup;
 			children = (
 				AA000005AA000005AA000006 /* CLIEventParser.swift */,
+				AA000010AA000010AA000011 /* JSONLReader.swift */,
+				AA000011AA000011AA000012 /* DatabaseService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -310,6 +322,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				AA000006AA000006AA000006 /* CLIEventParserTests.swift in Sources */,
+				AA000012AA000012AA000012 /* JSONLReaderTests.swift in Sources */,
+				AA000013AA000013AA000013 /* DatabaseServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -329,6 +343,8 @@
 				AA000003AA000003AA000003 /* SessionRecord.swift in Sources */,
 				AA000004AA000004AA000004 /* DailyStats.swift in Sources */,
 				AA000005AA000005AA000005 /* CLIEventParser.swift in Sources */,
+				AA000010AA000010AA000010 /* JSONLReader.swift in Sources */,
+				AA000011AA000011AA000011 /* DatabaseService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
