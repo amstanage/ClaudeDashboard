@@ -41,6 +41,9 @@
 		AA000025AA000025AA000025 /* WeeklyChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000025AA000025AA000026 /* WeeklyChartView.swift */; };
 		AA000026AA000026AA000026 /* MonthlyTrendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000026AA000026AA000027 /* MonthlyTrendView.swift */; };
 		AA000027AA000027AA000027 /* ModelUsageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000027AA000027AA000028 /* ModelUsageView.swift */; };
+		AA000028AA000028AA000028 /* SessionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000028AA000028AA000029 /* SessionsViewModel.swift */; };
+		AA000029AA000029AA000029 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000029AA000029AA000030 /* SessionDetailView.swift */; };
+		AA000030AA000030AA000030 /* SessionsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030AA000030AA000031 /* SessionsViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -92,6 +95,9 @@
 		AA000025AA000025AA000026 /* WeeklyChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyChartView.swift; sourceTree = "<group>"; };
 		AA000026AA000026AA000027 /* MonthlyTrendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthlyTrendView.swift; sourceTree = "<group>"; };
 		AA000027AA000027AA000028 /* ModelUsageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelUsageView.swift; sourceTree = "<group>"; };
+		AA000028AA000028AA000029 /* SessionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModel.swift; sourceTree = "<group>"; };
+		AA000029AA000029AA000030 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
+		AA000030AA000030AA000031 /* SessionsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -101,6 +107,7 @@
 				4DAD920A19676FF58C00868E /* AppViewModel.swift */,
 				AA000017AA000017AA000018 /* ChatViewModel.swift */,
 				AA000022AA000022AA000023 /* DashboardViewModel.swift */,
+				AA000028AA000028AA000029 /* SessionsViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -122,6 +129,7 @@
 				AA000013AA000013AA000014 /* DatabaseServiceTests.swift */,
 				AA000018AA000018AA000019 /* ChatViewModelTests.swift */,
 				AA000023AA000023AA000024 /* DashboardViewModelTests.swift */,
+				AA000030AA000030AA000031 /* SessionsViewModelTests.swift */,
 			);
 			path = ClaudeDashboardTests;
 			sourceTree = "<group>";
@@ -148,6 +156,7 @@
 			isa = PBXGroup;
 			children = (
 				18A112153A420AAFD690732A /* SessionsView.swift */,
+				AA000029AA000029AA000030 /* SessionDetailView.swift */,
 			);
 			path = Sessions;
 			sourceTree = "<group>";
@@ -368,6 +377,7 @@
 				AA000013AA000013AA000013 /* DatabaseServiceTests.swift in Sources */,
 				AA000018AA000018AA000018 /* ChatViewModelTests.swift in Sources */,
 				AA000023AA000023AA000023 /* DashboardViewModelTests.swift in Sources */,
+				AA000030AA000030AA000030 /* SessionsViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -401,6 +411,8 @@
 				AA000025AA000025AA000025 /* WeeklyChartView.swift in Sources */,
 				AA000026AA000026AA000026 /* MonthlyTrendView.swift in Sources */,
 				AA000027AA000027AA000027 /* ModelUsageView.swift in Sources */,
+				AA000028AA000028AA000028 /* SessionsViewModel.swift in Sources */,
+				AA000029AA000029AA000029 /* SessionDetailView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
