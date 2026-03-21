@@ -6,7 +6,7 @@ struct StatsBarView: View {
     private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
 
     var body: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 20) {
             StatChip(label: "Model", value: appViewModel.currentModel)
             StatChip(label: "Effort", value: appViewModel.effortLevel)
 
@@ -21,7 +21,7 @@ struct StatsBarView: View {
             StatChip(label: "Today", value: formatTokens(appViewModel.dailyTokens))
             StatChip(label: "Duration", value: sessionDuration)
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, 24)
         .onReceive(timer) { now = $0 }
     }
 
