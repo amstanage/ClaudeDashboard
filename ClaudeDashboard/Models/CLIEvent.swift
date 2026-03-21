@@ -3,6 +3,14 @@ import Foundation
 struct CLIEvent: Codable {
     let type: String
     let message: CLIMessage?
+    let result: String?  // Present on "result" events with the final response text
+    let subtype: String? // e.g. "init", "success"
+    let sessionId: String? // Present on most events
+
+    enum CodingKeys: String, CodingKey {
+        case type, message, result, subtype
+        case sessionId = "session_id"
+    }
 
     struct CLIMessage: Codable {
         let role: String?

@@ -1,0 +1,42 @@
+# Xcode
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+xcuserdata/
+DerivedData/
+*.xccheckout
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Build
+build/
+*.o
+*.d
+
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Personal / Sensitive
+*.env
+*.pem
+*.key
+credentials.*
+secrets.*
+
+# App data
+*.db
+*.db-shm
+*.db-wal
+
+# Claude
+.claude/
+
+# Swift Package Manager
+.build/
+Package.resolved

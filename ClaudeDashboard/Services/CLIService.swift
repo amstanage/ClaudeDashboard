@@ -1,9 +1,8 @@
 import Foundation
 
 @MainActor @Observable
-final class CLIService {
+final class CLIService: @unchecked Sendable {
     private var process: Process?
-    private var stdinPipe: Pipe?
     private var stdoutPipe: Pipe?
     private var stderrPipe: Pipe?
     private let parser = CLIEventParser()
@@ -16,39 +15,60 @@ final class CLIService {
     var onError: ((String) -> Void)?
     var onProcessExit: ((Int32) -> Void)?
 
-    func startSession(resume sessionId: String? = nil) throws {
+    private static let claudePath = "/Users/alexstanage/.local/bin/claude"
+
+    /// Thread-safe line buffer for partial stdout chunks
+    private final class LineBuffer: @unchecked Sendable {
+        var value = ""
+    }
+
+    /// Send a message by spawning a new `claude --print` process.
+    func sendMessage(_ text: String, model: String? = nil, effort: String? = nil) {
         stop()
 
         let process = Process()
-        let stdinPipe = Pipe()
         let stdoutPipe = Pipe()
         let stderrPipe = Pipe()
 
-        process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        var args = ["claude", "--print", "--output-format", "stream-json", "--input-format", "stream-json"]
-        if let sessionId {
+        process.executableURL = URL(fileURLWithPath: Self.claudePath)
+
+        var args = ["--print", "--output-format", "stream-json", "--verbose"]
+        if let model { args += ["--model", model] }
+        if let effort { args += ["--effort", effort] }
+        if let sessionId = currentSessionId {
             args += ["--resume", sessionId]
-            self.currentSessionId = sessionId
         }
+        args.append(text)
+
         process.arguments = args
-        process.standardInput = stdinPipe
+        process.currentDirectoryURL = FileManager.default.homeDirectoryForCurrentUser
         process.standardOutput = stdoutPipe
         process.standardError = stderrPipe
 
         let parser = self.parser
+        let buffer = LineBuffer()
         stdoutPipe.fileHandleForReading.readabilityHandler = { [weak self] handle in
             let data = handle.availableData
-            guard !data.isEmpty, let output = String(data: data, encoding: .utf8) else { return }
+            guard !data.isEmpty, let chunk = String(data: data, encoding: .utf8) else { return }
 
-            let events: [CLIEvent] = output.split(separator: "\n").map(String.init).compactMap { line in
+            let combined = buffer.value + chunk
+            var lines = combined.components(separatedBy: "\n")
+            buffer.value = lines.removeLast()
+
+            let parsedEvents: [(event: CLIEvent, raw: String)] = lines.compactMap { line in
                 let trimmed = line.trimmingCharacters(in: .whitespacesAndNewlines)
                 guard !trimmed.isEmpty else { return nil }
-                return try? parser.parse(line: trimmed)
+                guard let event = try? parser.parse(line: trimmed) else { return nil }
+                return (event, trimmed)
             }
 
             Task { @MainActor [weak self] in
-                self?.onRawOutput?(output)
-                for event in events {
+                self?.onRawOutput?(chunk)
+                for (event, raw) in parsedEvents {
+                    // Extract session_id from init event
+                    if event.type == "system", raw.contains("\"subtype\":\"init\"") {
+                        self?.extractSessionId(from: raw)
+                    }
                     self?.onEvent?(event)
                 }
             }
@@ -65,30 +85,46 @@ final class CLIService {
 
         process.terminationHandler = { [weak self] proc in
             let status = proc.terminationStatus
+            // Flush remaining buffer
+            let remaining = buffer.value
+            buffer.value = ""
             Task { @MainActor [weak self] in
+                if !remaining.isEmpty {
+                    let trimmed = remaining.trimmingCharacters(in: .whitespacesAndNewlines)
+                    if !trimmed.isEmpty, let event = try? parser.parse(line: trimmed) {
+                        if event.type == "system", trimmed.contains("\"subtype\":\"init\"") {
+                            self?.extractSessionId(from: trimmed)
+                        }
+                        self?.onEvent?(event)
+                    }
+                }
                 self?.isRunning = false
                 self?.onProcessExit?(status)
             }
         }
 
-        try process.run()
-        self.process = process
-        self.stdinPipe = stdinPipe
-        self.stdoutPipe = stdoutPipe
-        self.stderrPipe = stderrPipe
-        self.isRunning = true
+        do {
+            try process.run()
+            self.process = process
+            self.stdoutPipe = stdoutPipe
+            self.stderrPipe = stderrPipe
+            self.isRunning = true
+        } catch {
+            onError?("Failed to launch claude: \(error.localizedDescription)")
+        }
     }
 
-    func send(message: String) {
-        guard isRunning, let stdinPipe else { return }
-        let jsonMessage: [String: Any] = [
-            "type": "user",
-            "message": ["role": "user", "content": [["type": "text", "text": message]]]
-        ]
-        guard let data = try? JSONSerialization.data(withJSONObject: jsonMessage),
-              var jsonStr = String(data: data, encoding: .utf8) else { return }
-        jsonStr += "\n"
-        stdinPipe.fileHandleForWriting.write(jsonStr.data(using: .utf8)!)
+    private func extractSessionId(from line: String) {
+        if let data = line.data(using: .utf8),
+           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+           let sessionId = json["session_id"] as? String {
+            self.currentSessionId = sessionId
+        }
+    }
+
+    func newSession() {
+        stop()
+        currentSessionId = nil
     }
 
     func stop() {
@@ -111,7 +147,6 @@ final class CLIService {
         stdoutPipe?.fileHandleForReading.readabilityHandler = nil
         stderrPipe?.fileHandleForReading.readabilityHandler = nil
         process = nil
-        stdinPipe = nil
         stdoutPipe = nil
         stderrPipe = nil
         isRunning = false

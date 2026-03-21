@@ -19,9 +19,9 @@ struct DashboardView: View {
             }
             .padding(16)
         }
-        .task {
+        .onAppear {
             if let db = appViewModel.database { viewModel.configure(database: db) }
-            await viewModel.loadAll()
+            Task { await viewModel.loadAll() }
         }
     }
 }

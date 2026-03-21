@@ -44,6 +44,7 @@
 		AA000028AA000028AA000028 /* SessionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000028AA000028AA000029 /* SessionsViewModel.swift */; };
 		AA000029AA000029AA000029 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000029AA000029AA000030 /* SessionDetailView.swift */; };
 		AA000030AA000030AA000030 /* SessionsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000030AA000030AA000031 /* SessionsViewModelTests.swift */; };
+		AA000031AA000031AA000031 /* SkillsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA000031AA000031AA000032 /* SkillsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -98,6 +99,7 @@
 		AA000028AA000028AA000029 /* SessionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModel.swift; sourceTree = "<group>"; };
 		AA000029AA000029AA000030 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		AA000030AA000030AA000031 /* SessionsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionsViewModelTests.swift; sourceTree = "<group>"; };
+		AA000031AA000031AA000032 /* SkillsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkillsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -207,6 +209,7 @@
 				B51AEE5520251B7CA6015A18 /* Components */,
 				70FB5A10C2C2F94B51AACEFD /* Dashboard */,
 				35AACF9346F98AD26E59C80D /* Sessions */,
+				AA000032AA000032AA000032 /* Skills */,
 				0D4C7B193666134ED78648EE /* StatsBar */,
 				4439F7ED49DB301A33ED59FE /* Terminal */,
 			);
@@ -249,6 +252,14 @@
 				70EAF5AB034336E472A2FD00 /* Views */,
 			);
 			path = ClaudeDashboard;
+			sourceTree = "<group>";
+		};
+		AA000032AA000032AA000032 /* Skills */ = {
+			isa = PBXGroup;
+			children = (
+				AA000031AA000031AA000032 /* SkillsView.swift */,
+			);
+			path = Skills;
 			sourceTree = "<group>";
 		};
 		B51AEE5520251B7CA6015A18 /* Components */ = {
@@ -413,6 +424,7 @@
 				AA000027AA000027AA000027 /* ModelUsageView.swift in Sources */,
 				AA000028AA000028AA000028 /* SessionsViewModel.swift in Sources */,
 				AA000029AA000029AA000029 /* SessionDetailView.swift in Sources */,
+				AA000031AA000031AA000031 /* SkillsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

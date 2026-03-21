@@ -29,6 +29,11 @@ final class UsageSyncService: @unchecked Sendable {
         let total = Double(sessions.count)
 
         for (index, session) in sessions.enumerated() {
+            // Skip sessions the user has deleted
+            if (try? db.isSessionHidden(id: session.id)) == true {
+                syncProgress = Double(index + 1) / total
+                continue
+            }
             try db.insertSession(session)
             syncProgress = Double(index + 1) / total
         }
@@ -38,7 +43,7 @@ final class UsageSyncService: @unchecked Sendable {
 
     private func rebuildDailyStats() throws {
         guard let db else { return }
-        let sessions = try db.fetchSessions(limit: 10000)
+        let sessions = try db.fetchAllSessions(limit: 10000)
 
         var dailyMap: [String: (input: Int, output: Int, count: Int)] = [:]
         let formatter = DateFormatter()

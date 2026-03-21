@@ -86,7 +86,7 @@ final class DashboardViewModel {
 
     func loadModelBreakdown() async {
         guard let db else { return }
-        let sessions = (try? db.fetchSessions(limit: 10000)) ?? []
+        let sessions = (try? db.fetchAllSessions(limit: 10000)) ?? []
         let calendar = Calendar.current
         let cutoff = calendar.date(byAdding: .day, value: -modelPeriod, to: Date())!
         var modelMap: [String: Int] = [:]

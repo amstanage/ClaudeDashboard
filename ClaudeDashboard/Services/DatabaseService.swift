@@ -30,6 +30,7 @@ final class DatabaseService {
             role TEXT, content TEXT, tokens_in INTEGER DEFAULT 0, tokens_out INTEGER DEFAULT 0, model TEXT, timestamp INTEGER
         );
         CREATE TABLE IF NOT EXISTS sync_state (file_path TEXT PRIMARY KEY, last_synced_at INTEGER);
+        CREATE TABLE IF NOT EXISTS hidden_sessions (id TEXT PRIMARY KEY);
         """
         try execute(sql)
     }
@@ -46,7 +47,7 @@ final class DatabaseService {
     }
 
     func fetchSessions(limit: Int = 100) throws -> [SessionRecord] {
-        let sql = "SELECT * FROM sessions ORDER BY started_at DESC LIMIT ?;"
+        let sql = "SELECT * FROM sessions WHERE id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC LIMIT ?;"
         return try query(sql, bindings: [.int(limit)]) { stmt in
             SessionRecord(
                 id: String(cString: sqlite3_column_text(stmt, 0)),
@@ -62,7 +63,7 @@ final class DatabaseService {
     }
 
     func searchSessions(query: String) throws -> [SessionRecord] {
-        let sql = "SELECT * FROM sessions WHERE first_message LIKE ? ORDER BY started_at DESC;"
+        let sql = "SELECT * FROM sessions WHERE first_message LIKE ? AND id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC;"
         return try self.query(sql, bindings: [.text("%\(query)%")]) { stmt in
             SessionRecord(
                 id: String(cString: sqlite3_column_text(stmt, 0)),
@@ -75,6 +76,36 @@ final class DatabaseService {
                 firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
             )
         }
+    }
+
+    func deleteSession(id: String) throws {
+        try execute("INSERT OR IGNORE INTO hidden_sessions (id) VALUES (?);", bindings: [.text(id)])
+    }
+
+    func deleteAllSessions() throws {
+        try execute("INSERT OR IGNORE INTO hidden_sessions (id) SELECT id FROM sessions;")
+    }
+
+    /// Fetch all sessions including hidden ones — used for usage stats aggregation
+    func fetchAllSessions(limit: Int = 10000) throws -> [SessionRecord] {
+        let sql = "SELECT * FROM sessions ORDER BY started_at DESC LIMIT ?;"
+        return try query(sql, bindings: [.int(limit)]) { stmt in
+            SessionRecord(
+                id: String(cString: sqlite3_column_text(stmt, 0)),
+                projectPath: String(cString: sqlite3_column_text(stmt, 1)),
+                startedAt: Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 2))),
+                endedAt: sqlite3_column_type(stmt, 3) != SQLITE_NULL ? Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 3))) : nil,
+                model: sqlite3_column_type(stmt, 4) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 4)) : nil,
+                totalInputTokens: Int(sqlite3_column_int64(stmt, 5)),
+                totalOutputTokens: Int(sqlite3_column_int64(stmt, 6)),
+                firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
+            )
+        }
+    }
+
+    func isSessionHidden(id: String) throws -> Bool {
+        let results: [Bool] = try query("SELECT 1 FROM hidden_sessions WHERE id = ?;", bindings: [.text(id)]) { _ in true }
+        return !results.isEmpty
     }
 
     func upsertDailyStats(date: Date, inputTokens: Int, outputTokens: Int, sessions: Int) throws {
