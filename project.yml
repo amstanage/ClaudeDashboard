@@ -1,0 +1,40 @@
+name: ClaudeDashboard
+options:
+  bundleIdPrefix: com.alexstanage
+  deploymentTarget:
+    macOS: "26.0"
+  xcodeVersion: "26.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+
+targets:
+  ClaudeDashboard:
+    type: application
+    platform: macOS
+    sources:
+      - ClaudeDashboard
+    settings:
+      base:
+        INFOPLIST_FILE: ClaudeDashboard/Info.plist
+        CODE_SIGN_ENTITLEMENTS: ClaudeDashboard/ClaudeDashboard.entitlements
+        PRODUCT_BUNDLE_IDENTIFIER: com.alexstanage.ClaudeDashboard
+        PRODUCT_NAME: Claude Dashboard
+    dependencies: []
+
+  ClaudeDashboardTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - ClaudeDashboardTests
+    resources:
+      - path: ClaudeDashboardTests/Fixtures
+        buildPhase: resources
+    dependencies:
+      - target: ClaudeDashboard
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.alexstanage.ClaudeDashboardTests
