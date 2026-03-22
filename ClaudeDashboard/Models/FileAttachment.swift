@@ -24,8 +24,8 @@ struct FileAttachment: Identifiable, Equatable, Hashable, Sendable {
         hasher.combine(id)
     }
 
-    static let maxFileSize: Int64 = 1_000_000
-    static let maxTotalSize: Int64 = 5_000_000
+    static let maxFileSize: Int64 = 25_000_000   // 25MB
+    static let maxTotalSize: Int64 = 50_000_000  // 50MB
     static let maxFileCount = 10
 
     static func isWithinSizeLimit(bytes: Int64) -> Bool {
