@@ -9,6 +9,7 @@ struct ChatMessage: Identifiable {
     var tokensIn: Int?
     var tokensOut: Int?
     var isComplete: Bool
+    var attachments: [FileAttachment]
 
     enum MessageRole: String {
         case user
@@ -23,7 +24,8 @@ struct ChatMessage: Identifiable {
         model: String? = nil,
         tokensIn: Int? = nil,
         tokensOut: Int? = nil,
-        isComplete: Bool = true
+        isComplete: Bool = true,
+        attachments: [FileAttachment] = []
     ) {
         self.id = id
         self.role = role
@@ -33,5 +35,6 @@ struct ChatMessage: Identifiable {
         self.tokensIn = tokensIn
         self.tokensOut = tokensOut
         self.isComplete = isComplete
+        self.attachments = attachments
     }
 }
