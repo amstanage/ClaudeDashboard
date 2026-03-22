@@ -1,5 +1,4 @@
 import SwiftUI
-import UniformTypeIdentifiers
 
 struct MessageInputView: View {
     @Bindable var viewModel: ChatViewModel
@@ -103,9 +102,6 @@ struct MessageInputView: View {
         .padding(12)
         .glassEffect(.regular.interactive(), in: .rect(cornerRadius: 16))
         .padding(.leading, 16).padding(.bottom, 12)
-        .onDrop(of: [UTType.fileURL], isTargeted: nil) { providers in
-            handleDrop(providers)
-        }
     }
 
     private func pickFiles() {
@@ -119,18 +115,5 @@ struct MessageInputView: View {
                 viewModel.addAttachment(url: url)
             }
         }
-    }
-
-    private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
-        for provider in providers {
-            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { data, _ in
-                guard let data = data as? Data,
-                      let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
-                Task { @MainActor in
-                    viewModel.addAttachment(url: url)
-                }
-            }
-        }
-        return true
     }
 }

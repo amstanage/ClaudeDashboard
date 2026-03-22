@@ -1,8 +1,10 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct ChatView: View {
     @Environment(AppViewModel.self) private var appViewModel
     @Bindable var viewModel: ChatViewModel
+    @State private var isDropTargeted = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -10,9 +12,46 @@ struct ChatView: View {
             terminalSection
             inputSection
         }
+        .overlay {
+            if isDropTargeted {
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.accentColor, lineWidth: 3)
+                    .background(Color.accentColor.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .allowsHitTesting(false)
+            }
+        }
+        .onDrop(of: [UTType.fileURL, UTType.image], isTargeted: $isDropTargeted) { providers in
+            handleDrop(providers)
+        }
         .modifier(ChatStatsSync(viewModel: viewModel, appViewModel: appViewModel))
         .onReceive(NotificationCenter.default.publisher(for: .newConversation)) { _ in viewModel.newConversation() }
         .onReceive(NotificationCenter.default.publisher(for: .clearDisplay)) { _ in viewModel.clearDisplay() }
+    }
+
+    private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
+        for provider in providers {
+            // Try file URL first
+            if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { data, _ in
+                    guard let data = data as? Data,
+                          let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
+                    Task { @MainActor in
+                        viewModel.addAttachment(url: url)
+                    }
+                }
+            }
+            // Fall back to image data (e.g. from Photos.app)
+            else if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
+                provider.loadDataRepresentation(forTypeIdentifier: UTType.png.identifier) { data, _ in
+                    guard let data else { return }
+                    Task { @MainActor in
+                        viewModel.addImageAttachment(data: data, fileName: "dropped-image.png")
+                    }
+                }
+            }
+        }
+        return true
     }
 
     private var chatScrollArea: some View {

@@ -70,7 +70,11 @@ final class ChatViewModel {
         if !attachments.isEmpty {
             Task {
                 let fileContents: [String] = await Task.detached {
-                    attachments.compactMap { attachment in
+                    attachments.compactMap { attachment -> String? in
+                        // Skip binary files (images, PDFs) — can't send as text to CLI
+                        guard attachment.fileType == .code || attachment.fileType == .text else {
+                            return "[Attached file: \(attachment.fileName)]"
+                        }
                         guard let content = try? String(contentsOf: attachment.url, encoding: .utf8) else { return nil }
                         let lang = (attachment.fileName as NSString).pathExtension
                         return "```\(lang) (\(attachment.fileName))\n\(content)\n```"
@@ -179,6 +183,18 @@ final class ChatViewModel {
     func removeAttachment(_ attachment: FileAttachment) {
         pendingAttachments.removeAll { $0.id == attachment.id }
         attachmentError = nil
+    }
+
+    /// Add an image from raw data (e.g. dropped from Photos.app, not a file URL)
+    func addImageAttachment(data: Data, fileName: String) {
+        let tempDir = FileManager.default.temporaryDirectory
+        let tempURL = tempDir.appendingPathComponent(UUID().uuidString + "-" + fileName)
+        do {
+            try data.write(to: tempURL)
+            addAttachment(url: tempURL)
+        } catch {
+            attachmentError = "Failed to save dropped image"
+        }
     }
 
     func newConversation() {
