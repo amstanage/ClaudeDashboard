@@ -21,37 +21,9 @@ struct ChatView: View {
                     .allowsHitTesting(false)
             }
         }
-        .onDrop(of: [UTType.fileURL, UTType.image], isTargeted: $isDropTargeted) { providers in
-            handleDrop(providers)
-        }
         .modifier(ChatStatsSync(viewModel: viewModel, appViewModel: appViewModel))
         .onReceive(NotificationCenter.default.publisher(for: .newConversation)) { _ in viewModel.newConversation() }
         .onReceive(NotificationCenter.default.publisher(for: .clearDisplay)) { _ in viewModel.clearDisplay() }
-    }
-
-    private func handleDrop(_ providers: [NSItemProvider]) -> Bool {
-        for provider in providers {
-            // Try file URL first
-            if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
-                provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { data, _ in
-                    guard let data = data as? Data,
-                          let url = URL(dataRepresentation: data, relativeTo: nil) else { return }
-                    Task { @MainActor in
-                        viewModel.addAttachment(url: url)
-                    }
-                }
-            }
-            // Fall back to image data (e.g. from Photos.app)
-            else if provider.hasItemConformingToTypeIdentifier(UTType.image.identifier) {
-                provider.loadDataRepresentation(forTypeIdentifier: UTType.png.identifier) { data, _ in
-                    guard let data else { return }
-                    Task { @MainActor in
-                        viewModel.addImageAttachment(data: data, fileName: "dropped-image.png")
-                    }
-                }
-            }
-        }
-        return true
     }
 
     private var chatScrollArea: some View {
@@ -70,6 +42,14 @@ struct ChatView: View {
                     }
                 }
                 .padding(.horizontal, 16).padding(.top, 12)
+            }
+            .dropDestination(for: URL.self) { urls, _ in
+                for url in urls {
+                    viewModel.addAttachment(url: url)
+                }
+                return !urls.isEmpty
+            } isTargeted: { targeted in
+                isDropTargeted = targeted
             }
             .onChange(of: viewModel.messages.count) { _, _ in
                 if let last = viewModel.messages.last {
