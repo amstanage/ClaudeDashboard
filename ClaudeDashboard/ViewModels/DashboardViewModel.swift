@@ -22,6 +22,7 @@ final class DashboardViewModel {
     var monthlyData: [DailyStats] = []
     var modelBreakdown: [ModelUsageEntry] = []
     var maxDailyTokens: Int = 0
+    var heatmapCols: Int = 52
     var modelPeriod: Int = 7
 
     private var db: DatabaseService?
@@ -39,16 +40,22 @@ final class DashboardViewModel {
         guard let db else { return }
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
+        // Align start to Monday so row 0 = Monday in the grid
         let yearAgo = calendar.date(byAdding: .day, value: -364, to: today)!
-        let fetched = (try? db.fetchDailyStats(from: yearAgo, to: today)) ?? []
+        let weekday = calendar.component(.weekday, from: yearAgo) // 1=Sun, 2=Mon, ..., 7=Sat
+        let offsetToMonday = -((weekday - 2 + 7) % 7)
+        let alignedStart = calendar.date(byAdding: .day, value: offsetToMonday, to: yearAgo)!
+        let totalDays = calendar.dateComponents([.day], from: alignedStart, to: today).day! + 1
+        let fetched = (try? db.fetchDailyStats(from: alignedStart, to: today)) ?? []
         let fetchedByDate = Dictionary(uniqueKeysWithValues: fetched.map { (calendar.startOfDay(for: $0.date), $0) })
         var result: [DailyStats] = []
-        for dayOffset in 0..<365 {
-            let date = calendar.date(byAdding: .day, value: dayOffset, to: yearAgo)!
+        for dayOffset in 0..<totalDays {
+            let date = calendar.date(byAdding: .day, value: dayOffset, to: alignedStart)!
             let key = calendar.startOfDay(for: date)
-            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, sessionCount: 0))
+            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, totalCacheTokens: 0, sessionCount: 0))
         }
         heatmapData = result
+        heatmapCols = (totalDays + 6) / 7
         maxDailyTokens = result.map(\.totalTokens).max() ?? 0
     }
 
@@ -63,7 +70,7 @@ final class DashboardViewModel {
         for dayOffset in 0..<7 {
             let date = calendar.date(byAdding: .day, value: dayOffset, to: weekStart)!
             let key = calendar.startOfDay(for: date)
-            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, sessionCount: 0))
+            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, totalCacheTokens: 0, sessionCount: 0))
         }
         weeklyData = result
     }
@@ -79,7 +86,7 @@ final class DashboardViewModel {
         for dayOffset in 0..<30 {
             let date = calendar.date(byAdding: .day, value: dayOffset, to: monthAgo)!
             let key = calendar.startOfDay(for: date)
-            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, sessionCount: 0))
+            result.append(fetchedByDate[key] ?? DailyStats(date: date, totalInputTokens: 0, totalOutputTokens: 0, totalCacheTokens: 0, sessionCount: 0))
         }
         monthlyData = result
     }

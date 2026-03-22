@@ -7,7 +7,7 @@ struct DashboardView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
-                UsageHeatmapView(data: viewModel.heatmapData, maxTokens: viewModel.maxDailyTokens)
+                UsageHeatmapView(data: viewModel.heatmapData, maxTokens: viewModel.maxDailyTokens, cols: viewModel.heatmapCols)
                 HStack(spacing: 16) {
                     WeeklyChartView(data: viewModel.weeklyData)
                     MonthlyTrendView(data: viewModel.monthlyData)

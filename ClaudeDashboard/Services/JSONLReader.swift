@@ -3,6 +3,7 @@ import Foundation
 struct SessionStats {
     var totalInputTokens: Int = 0
     var totalOutputTokens: Int = 0
+    var totalCacheTokens: Int = 0
     var model: String?
     var firstMessage: String?
 }
@@ -85,6 +86,7 @@ struct JSONLReader {
             if let usage = event.message?.usage {
                 stats.totalInputTokens += usage.inputTokens
                 stats.totalOutputTokens += usage.outputTokens
+                stats.totalCacheTokens += (usage.cacheCreationInputTokens ?? 0) + (usage.cacheReadInputTokens ?? 0)
             }
             if stats.model == nil, let model = event.message?.model {
                 stats.model = model
@@ -125,7 +127,8 @@ struct JSONLReader {
                 sessions.append(SessionRecord(
                     id: sessionId, projectPath: projectPath, startedAt: created, endedAt: modified,
                     model: stats.model, totalInputTokens: stats.totalInputTokens,
-                    totalOutputTokens: stats.totalOutputTokens, firstMessage: stats.firstMessage
+                    totalOutputTokens: stats.totalOutputTokens, totalCacheTokens: stats.totalCacheTokens,
+                    firstMessage: stats.firstMessage
                 ))
             }
         }

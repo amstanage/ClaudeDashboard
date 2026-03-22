@@ -7,6 +7,7 @@ final class ChatViewModel {
     var isWaitingForResponse: Bool = false
     var sessionInputTokens: Int = 0
     var sessionOutputTokens: Int = 0
+    var sessionCacheTokens: Int = 0
     var messageCount: Int = 0
     var selectedModel: String = "opus"
     var selectedEffort: String = "max"
@@ -92,6 +93,7 @@ final class ChatViewModel {
             if let usage = event.usage {
                 sessionInputTokens += usage.inputTokens
                 sessionOutputTokens += usage.outputTokens
+                sessionCacheTokens += (usage.cacheCreationInputTokens ?? 0) + (usage.cacheReadInputTokens ?? 0)
             }
             gotAssistantResponse = false
             isWaitingForResponse = false
@@ -106,6 +108,7 @@ final class ChatViewModel {
         rawOutput.removeAll()
         sessionInputTokens = 0
         sessionOutputTokens = 0
+        sessionCacheTokens = 0
         messageCount = 0
         sessionStartTime = nil
         isWaitingForResponse = false
@@ -153,6 +156,7 @@ final class ChatViewModel {
             model: stats.model,
             totalInputTokens: stats.totalInputTokens,
             totalOutputTokens: stats.totalOutputTokens,
+            totalCacheTokens: stats.totalCacheTokens,
             firstMessage: stats.firstMessage
         )
         try? db.insertSession(record)

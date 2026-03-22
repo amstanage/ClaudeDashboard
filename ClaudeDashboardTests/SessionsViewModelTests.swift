@@ -9,8 +9,8 @@ final class SessionsViewModelTests: XCTestCase {
     override func setUpWithError() throws {
         dbURL = FileManager.default.temporaryDirectory.appendingPathComponent("sess-test-\(UUID().uuidString).db")
         db = try DatabaseService(url: dbURL)
-        try db.insertSession(SessionRecord(id: "s1", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-opus-4-6", totalInputTokens: 100, totalOutputTokens: 50, firstMessage: "Help with Swift"))
-        try db.insertSession(SessionRecord(id: "s2", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-sonnet-4-6", totalInputTokens: 200, totalOutputTokens: 80, firstMessage: "Write Python script"))
+        try db.insertSession(SessionRecord(id: "s1", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-opus-4-6", totalInputTokens: 100, totalOutputTokens: 50, totalCacheTokens: 0, firstMessage: "Help with Swift"))
+        try db.insertSession(SessionRecord(id: "s2", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-sonnet-4-6", totalInputTokens: 200, totalOutputTokens: 80, totalCacheTokens: 0, firstMessage: "Write Python script"))
     }
 
     override func tearDown() { db = nil; try? FileManager.default.removeItem(at: dbURL) }

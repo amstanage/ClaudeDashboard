@@ -79,10 +79,12 @@ struct ChatStatsSync: ViewModifier {
             .onChange(of: viewModel.sessionInputTokens) { _, _ in
                 appViewModel.sessionInputTokens = viewModel.sessionInputTokens
                 appViewModel.sessionOutputTokens = viewModel.sessionOutputTokens
+                appViewModel.sessionCacheTokens = viewModel.sessionCacheTokens
             }
             .onChange(of: viewModel.sessionOutputTokens) { _, _ in
                 appViewModel.sessionInputTokens = viewModel.sessionInputTokens
                 appViewModel.sessionOutputTokens = viewModel.sessionOutputTokens
+                appViewModel.sessionCacheTokens = viewModel.sessionCacheTokens
             }
             .onChange(of: viewModel.messageCount) { _, newValue in
                 appViewModel.messageCount = newValue

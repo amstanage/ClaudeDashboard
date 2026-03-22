@@ -9,7 +9,9 @@ final class AppViewModel {
     var effortLevel: String = "max"
     var sessionInputTokens: Int = 0
     var sessionOutputTokens: Int = 0
+    var sessionCacheTokens: Int = 0
     var dailyTokens: Int = 0
+    var dailyCacheTokens: Int = 0
     var messageCount: Int = 0
     var sessionStartTime: Date? = nil
 
@@ -45,6 +47,7 @@ final class AppViewModel {
         let today = Calendar.current.startOfDay(for: Date())
         if let stats = try? database.fetchDailyStats(from: today, to: today), let todayStats = stats.first {
             dailyTokens = todayStats.totalTokens
+            dailyCacheTokens = todayStats.totalCacheTokens
         }
     }
 }

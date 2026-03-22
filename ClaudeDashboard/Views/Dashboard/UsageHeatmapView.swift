@@ -3,10 +3,10 @@ import SwiftUI
 struct UsageHeatmapView: View {
     let data: [DailyStats]
     let maxTokens: Int
+    var cols: Int = 52
     private let cellSize: CGFloat = 12
     private let cellSpacing: CGFloat = 3
     private let rows = 7
-    private let cols = 52
     private let dayLabels = ["Mon", "", "Wed", "", "Fri", "", "Sun"]
     @State private var hoveredIndex: Int?
 

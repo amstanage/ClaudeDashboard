@@ -33,49 +33,59 @@ final class DatabaseService {
         CREATE TABLE IF NOT EXISTS hidden_sessions (id TEXT PRIMARY KEY);
         """
         try execute(sql)
+        try migrate()
+    }
+
+    private func migrate() throws {
+        // Add total_cache_tokens columns if missing
+        let addColumn = { [self] (table: String) in
+            let pragma: [String] = try query("PRAGMA table_info(\(table));") { stmt in
+                String(cString: sqlite3_column_text(stmt, 1))
+            }
+            if !pragma.contains("total_cache_tokens") {
+                try execute("ALTER TABLE \(table) ADD COLUMN total_cache_tokens INTEGER DEFAULT 0;")
+            }
+        }
+        try addColumn("sessions")
+        try addColumn("daily_stats")
     }
 
     func insertSession(_ session: SessionRecord) throws {
-        let sql = "INSERT OR REPLACE INTO sessions (id, project_path, started_at, ended_at, model, total_input_tokens, total_output_tokens, first_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?);"
+        let sql = "INSERT OR REPLACE INTO sessions (id, project_path, started_at, ended_at, model, total_input_tokens, total_output_tokens, total_cache_tokens, first_message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);"
         try execute(sql, bindings: [
             .text(session.id), .text(session.projectPath),
             .int(Int(session.startedAt.timeIntervalSince1970)),
             .optionalInt(session.endedAt.map { Int($0.timeIntervalSince1970) }),
             .optionalText(session.model), .int(session.totalInputTokens),
-            .int(session.totalOutputTokens), .optionalText(session.firstMessage),
+            .int(session.totalOutputTokens), .int(session.totalCacheTokens),
+            .optionalText(session.firstMessage),
         ])
     }
 
+    private static let sessionColumns = "id, project_path, started_at, ended_at, model, total_input_tokens, total_output_tokens, first_message, total_cache_tokens"
+
+    private static func parseSession(from stmt: OpaquePointer?) -> SessionRecord {
+        SessionRecord(
+            id: String(cString: sqlite3_column_text(stmt, 0)),
+            projectPath: String(cString: sqlite3_column_text(stmt, 1)),
+            startedAt: Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 2))),
+            endedAt: sqlite3_column_type(stmt, 3) != SQLITE_NULL ? Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 3))) : nil,
+            model: sqlite3_column_type(stmt, 4) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 4)) : nil,
+            totalInputTokens: Int(sqlite3_column_int64(stmt, 5)),
+            totalOutputTokens: Int(sqlite3_column_int64(stmt, 6)),
+            totalCacheTokens: Int(sqlite3_column_int64(stmt, 8)),
+            firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
+        )
+    }
+
     func fetchSessions(limit: Int = 100) throws -> [SessionRecord] {
-        let sql = "SELECT * FROM sessions WHERE id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC LIMIT ?;"
-        return try query(sql, bindings: [.int(limit)]) { stmt in
-            SessionRecord(
-                id: String(cString: sqlite3_column_text(stmt, 0)),
-                projectPath: String(cString: sqlite3_column_text(stmt, 1)),
-                startedAt: Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 2))),
-                endedAt: sqlite3_column_type(stmt, 3) != SQLITE_NULL ? Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 3))) : nil,
-                model: sqlite3_column_type(stmt, 4) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 4)) : nil,
-                totalInputTokens: Int(sqlite3_column_int64(stmt, 5)),
-                totalOutputTokens: Int(sqlite3_column_int64(stmt, 6)),
-                firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
-            )
-        }
+        let sql = "SELECT \(Self.sessionColumns) FROM sessions WHERE id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC LIMIT ?;"
+        return try query(sql, bindings: [.int(limit)]) { Self.parseSession(from: $0) }
     }
 
     func searchSessions(query: String) throws -> [SessionRecord] {
-        let sql = "SELECT * FROM sessions WHERE first_message LIKE ? AND id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC;"
-        return try self.query(sql, bindings: [.text("%\(query)%")]) { stmt in
-            SessionRecord(
-                id: String(cString: sqlite3_column_text(stmt, 0)),
-                projectPath: String(cString: sqlite3_column_text(stmt, 1)),
-                startedAt: Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 2))),
-                endedAt: sqlite3_column_type(stmt, 3) != SQLITE_NULL ? Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 3))) : nil,
-                model: sqlite3_column_type(stmt, 4) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 4)) : nil,
-                totalInputTokens: Int(sqlite3_column_int64(stmt, 5)),
-                totalOutputTokens: Int(sqlite3_column_int64(stmt, 6)),
-                firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
-            )
-        }
+        let sql = "SELECT \(Self.sessionColumns) FROM sessions WHERE first_message LIKE ? AND id NOT IN (SELECT id FROM hidden_sessions) ORDER BY started_at DESC;"
+        return try self.query(sql, bindings: [.text("%\(query)%")]) { Self.parseSession(from: $0) }
     }
 
     func deleteSession(id: String) throws {
@@ -88,19 +98,8 @@ final class DatabaseService {
 
     /// Fetch all sessions including hidden ones — used for usage stats aggregation
     func fetchAllSessions(limit: Int = 10000) throws -> [SessionRecord] {
-        let sql = "SELECT * FROM sessions ORDER BY started_at DESC LIMIT ?;"
-        return try query(sql, bindings: [.int(limit)]) { stmt in
-            SessionRecord(
-                id: String(cString: sqlite3_column_text(stmt, 0)),
-                projectPath: String(cString: sqlite3_column_text(stmt, 1)),
-                startedAt: Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 2))),
-                endedAt: sqlite3_column_type(stmt, 3) != SQLITE_NULL ? Date(timeIntervalSince1970: TimeInterval(sqlite3_column_int64(stmt, 3))) : nil,
-                model: sqlite3_column_type(stmt, 4) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 4)) : nil,
-                totalInputTokens: Int(sqlite3_column_int64(stmt, 5)),
-                totalOutputTokens: Int(sqlite3_column_int64(stmt, 6)),
-                firstMessage: sqlite3_column_type(stmt, 7) != SQLITE_NULL ? String(cString: sqlite3_column_text(stmt, 7)) : nil
-            )
-        }
+        let sql = "SELECT \(Self.sessionColumns) FROM sessions ORDER BY started_at DESC LIMIT ?;"
+        return try query(sql, bindings: [.int(limit)]) { Self.parseSession(from: $0) }
     }
 
     func isSessionHidden(id: String) throws -> Bool {
@@ -108,19 +107,25 @@ final class DatabaseService {
         return !results.isEmpty
     }
 
-    func upsertDailyStats(date: Date, inputTokens: Int, outputTokens: Int, sessions: Int) throws {
+    func upsertDailyStats(date: Date, inputTokens: Int, outputTokens: Int, cacheTokens: Int, sessions: Int) throws {
         let dateStr = Self.dateFormatter.string(from: date)
-        let sql = "INSERT OR REPLACE INTO daily_stats (date, total_input_tokens, total_output_tokens, session_count) VALUES (?, ?, ?, ?);"
-        try execute(sql, bindings: [.text(dateStr), .int(inputTokens), .int(outputTokens), .int(sessions)])
+        let sql = "INSERT OR REPLACE INTO daily_stats (date, total_input_tokens, total_output_tokens, total_cache_tokens, session_count) VALUES (?, ?, ?, ?, ?);"
+        try execute(sql, bindings: [.text(dateStr), .int(inputTokens), .int(outputTokens), .int(cacheTokens), .int(sessions)])
     }
 
     func fetchDailyStats(from startDate: Date, to endDate: Date) throws -> [DailyStats] {
         let startStr = Self.dateFormatter.string(from: startDate)
         let endStr = Self.dateFormatter.string(from: endDate)
-        let sql = "SELECT date, total_input_tokens, total_output_tokens, session_count FROM daily_stats WHERE date >= ? AND date <= ? ORDER BY date ASC;"
+        let sql = "SELECT date, total_input_tokens, total_output_tokens, total_cache_tokens, session_count FROM daily_stats WHERE date >= ? AND date <= ? ORDER BY date ASC;"
         return try query(sql, bindings: [.text(startStr), .text(endStr)]) { stmt in
             let dateStr = String(cString: sqlite3_column_text(stmt, 0))
-            return DailyStats(date: Self.dateFormatter.date(from: dateStr) ?? Date(), totalInputTokens: Int(sqlite3_column_int64(stmt, 1)), totalOutputTokens: Int(sqlite3_column_int64(stmt, 2)), sessionCount: Int(sqlite3_column_int64(stmt, 3)))
+            return DailyStats(
+                date: Self.dateFormatter.date(from: dateStr) ?? Date(),
+                totalInputTokens: Int(sqlite3_column_int64(stmt, 1)),
+                totalOutputTokens: Int(sqlite3_column_int64(stmt, 2)),
+                totalCacheTokens: Int(sqlite3_column_int64(stmt, 3)),
+                sessionCount: Int(sqlite3_column_int64(stmt, 4))
+            )
         }
     }
 

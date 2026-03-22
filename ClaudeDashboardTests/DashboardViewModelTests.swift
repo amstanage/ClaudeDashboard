@@ -31,8 +31,8 @@ final class DashboardViewModelTests: XCTestCase {
     }
 
     func testModelBreakdown() async throws {
-        try db.insertSession(SessionRecord(id: "s1", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-opus-4-6", totalInputTokens: 1000, totalOutputTokens: 500, firstMessage: "test"))
-        try db.insertSession(SessionRecord(id: "s2", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-sonnet-4-6", totalInputTokens: 500, totalOutputTokens: 250, firstMessage: "test"))
+        try db.insertSession(SessionRecord(id: "s1", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-opus-4-6", totalInputTokens: 1000, totalOutputTokens: 500, totalCacheTokens: 0, firstMessage: "test"))
+        try db.insertSession(SessionRecord(id: "s2", projectPath: "/p", startedAt: Date(), endedAt: nil, model: "claude-sonnet-4-6", totalInputTokens: 500, totalOutputTokens: 250, totalCacheTokens: 0, firstMessage: "test"))
         let vm = DashboardViewModel()
         vm.configure(database: db)
         await vm.loadModelBreakdown()

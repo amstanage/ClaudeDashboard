@@ -8,6 +8,7 @@ struct SessionRecord: Identifiable {
     let model: String?
     let totalInputTokens: Int
     let totalOutputTokens: Int
+    let totalCacheTokens: Int
     let firstMessage: String?
 
     var totalTokens: Int { totalInputTokens + totalOutputTokens }

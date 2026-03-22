@@ -79,22 +79,23 @@ final class UsageSyncService: @unchecked Sendable {
         guard let db else { return }
         let sessions = try db.fetchAllSessions(limit: 10000)
 
-        var dailyMap: [String: (input: Int, output: Int, count: Int)] = [:]
+        var dailyMap: [String: (input: Int, output: Int, cache: Int, count: Int)] = [:]
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd"
 
         for session in sessions {
             let key = formatter.string(from: session.startedAt)
-            var existing = dailyMap[key] ?? (0, 0, 0)
+            var existing = dailyMap[key] ?? (0, 0, 0, 0)
             existing.input += session.totalInputTokens
             existing.output += session.totalOutputTokens
+            existing.cache += session.totalCacheTokens
             existing.count += 1
             dailyMap[key] = existing
         }
 
         for (dateStr, stats) in dailyMap {
             if let date = formatter.date(from: dateStr) {
-                try db.upsertDailyStats(date: date, inputTokens: stats.input, outputTokens: stats.output, sessions: stats.count)
+                try db.upsertDailyStats(date: date, inputTokens: stats.input, outputTokens: stats.output, cacheTokens: stats.cache, sessions: stats.count)
             }
         }
     }

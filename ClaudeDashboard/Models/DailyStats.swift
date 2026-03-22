@@ -4,6 +4,7 @@ struct DailyStats: Identifiable {
     let date: Date
     let totalInputTokens: Int
     let totalOutputTokens: Int
+    let totalCacheTokens: Int
     let sessionCount: Int
 
     var id: Date { date }

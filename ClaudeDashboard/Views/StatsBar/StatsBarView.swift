@@ -18,11 +18,13 @@ struct StatsBarView: View {
 
             StatChip(label: "Sent", value: formatTokens(appViewModel.sessionInputTokens))
             StatChip(label: "Received", value: formatTokens(appViewModel.sessionOutputTokens))
+            StatChip(label: "Cache", value: formatTokens(appViewModel.sessionCacheTokens))
             StatChip(label: "Messages", value: "\(appViewModel.messageCount)")
 
             Divider().frame(height: 24)
 
             StatChip(label: "Today", value: formatTokens(appViewModel.dailyTokens))
+            StatChip(label: "Cache Today", value: formatTokens(appViewModel.dailyCacheTokens))
             StatChip(label: "Duration", value: sessionDuration)
         }
         .padding(.horizontal, 24)
