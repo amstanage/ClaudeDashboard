@@ -4,14 +4,14 @@ struct SyntaxHighlighter {
 
     // MARK: - Font & Colors
 
-    nonisolated(unsafe) static let monoFont = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
+    nonisolated(unsafe) private static let monoFont = NSFont.monospacedSystemFont(ofSize: 13, weight: .regular)
 
-    nonisolated(unsafe) static let defaultColor  = NSColor(calibratedRed: 0.78, green: 0.78, blue: 0.80, alpha: 1)  // light gray
-    nonisolated(unsafe) static let keywordColor  = NSColor(calibratedRed: 0.68, green: 0.51, blue: 0.85, alpha: 1)  // purple
-    nonisolated(unsafe) static let stringColor   = NSColor(calibratedRed: 0.87, green: 0.36, blue: 0.36, alpha: 1)  // red
-    nonisolated(unsafe) static let commentColor  = NSColor(calibratedRed: 0.55, green: 0.55, blue: 0.57, alpha: 1)  // gray
-    nonisolated(unsafe) static let numberColor   = NSColor(calibratedRed: 0.86, green: 0.78, blue: 0.40, alpha: 1)  // yellow
-    nonisolated(unsafe) static let typeColor     = NSColor(calibratedRed: 0.40, green: 0.80, blue: 0.85, alpha: 1)  // cyan
+    private static let defaultColor  = NSColor(calibratedRed: 0.78, green: 0.78, blue: 0.80, alpha: 1)  // light gray
+    private static let keywordColor  = NSColor(calibratedRed: 0.68, green: 0.51, blue: 0.85, alpha: 1)  // purple
+    private static let stringColor   = NSColor(calibratedRed: 0.87, green: 0.36, blue: 0.36, alpha: 1)  // red
+    private static let commentColor  = NSColor(calibratedRed: 0.55, green: 0.55, blue: 0.57, alpha: 1)  // gray
+    private static let numberColor   = NSColor(calibratedRed: 0.86, green: 0.78, blue: 0.40, alpha: 1)  // yellow
+    private static let typeColor     = NSColor(calibratedRed: 0.40, green: 0.80, blue: 0.85, alpha: 1)  // cyan
 
     // MARK: - Regex Patterns
 
