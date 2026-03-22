@@ -40,3 +40,6 @@ secrets.*
 # Swift Package Manager
 .build/
 Package.resolved
+
+# Worktrees
+.worktrees/
