@@ -78,7 +78,8 @@ struct FileReferenceView: View {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 400)
+                    .frame(maxWidth: 400, maxHeight: 300)
+                    .fixedSize()
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 Text("Unable to load image").font(.caption).foregroundStyle(.secondary).padding(8)

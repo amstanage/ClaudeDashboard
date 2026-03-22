@@ -38,11 +38,12 @@ struct MessageContentView: View {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 400)
+                    .frame(maxWidth: 400, maxHeight: 300)
+                    .fixedSize()
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             } else {
                 AsyncImage(url: url) { image in
-                    image.resizable().aspectRatio(contentMode: .fit).frame(maxWidth: 400)
+                    image.resizable().aspectRatio(contentMode: .fit).frame(maxWidth: 400, maxHeight: 300)
                 } placeholder: {
                     ProgressView()
                 }

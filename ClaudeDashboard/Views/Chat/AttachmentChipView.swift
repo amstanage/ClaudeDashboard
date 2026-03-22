@@ -66,7 +66,8 @@ struct AttachmentChipView: View {
                 Image(nsImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(maxWidth: 400)
+                    .frame(maxWidth: 400, maxHeight: 300)
+                    .fixedSize()
                     .clipShape(RoundedRectangle(cornerRadius: 8))
             }
         case .pdf:
