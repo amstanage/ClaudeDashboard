@@ -13,6 +13,15 @@ struct ChatView: View {
             inputSection
         }
         .overlay {
+            // Drop zone overlay using AppKit for reliable drag-and-drop
+            DropZoneView(isTargeted: $isDropTargeted) { urls in
+                for url in urls {
+                    viewModel.addAttachment(url: url)
+                }
+            }
+            .allowsHitTesting(isDropTargeted ? false : true)
+        }
+        .overlay {
             if isDropTargeted {
                 RoundedRectangle(cornerRadius: 12)
                     .stroke(Color.accentColor, lineWidth: 3)
@@ -42,14 +51,6 @@ struct ChatView: View {
                     }
                 }
                 .padding(.horizontal, 16).padding(.top, 12)
-            }
-            .dropDestination(for: URL.self) { urls, _ in
-                for url in urls {
-                    viewModel.addAttachment(url: url)
-                }
-                return !urls.isEmpty
-            } isTargeted: { targeted in
-                isDropTargeted = targeted
             }
             .onChange(of: viewModel.messages.count) { _, _ in
                 if let last = viewModel.messages.last {
@@ -85,6 +86,94 @@ struct ChatView: View {
             .padding(.trailing, 16)
             .padding(.bottom, 16)
         }
+    }
+}
+
+// MARK: - AppKit Drop Zone (reliable drag-and-drop)
+
+/// NSViewRepresentable that uses AppKit's NSDraggingDestination for reliable file drops.
+/// SwiftUI's .onDrop and .dropDestination are unreliable with ScrollView and glassEffect.
+struct DropZoneView: NSViewRepresentable {
+    @Binding var isTargeted: Bool
+    var onDrop: ([URL]) -> Void
+
+    func makeNSView(context: Context) -> DropReceivingView {
+        let view = DropReceivingView()
+        view.onDrop = onDrop
+        view.onTargetChanged = { targeted in
+            DispatchQueue.main.async {
+                isTargeted = targeted
+            }
+        }
+        view.registerForDraggedTypes([.fileURL, .png, .tiff, .URL])
+        return view
+    }
+
+    func updateNSView(_ nsView: DropReceivingView, context: Context) {
+        nsView.onDrop = onDrop
+        nsView.onTargetChanged = { targeted in
+            DispatchQueue.main.async {
+                isTargeted = targeted
+            }
+        }
+    }
+}
+
+/// AppKit view that accepts file drops via NSDraggingDestination
+final class DropReceivingView: NSView {
+    var onDrop: (([URL]) -> Void)?
+    var onTargetChanged: ((Bool) -> Void)?
+
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        onTargetChanged?(true)
+        return .copy
+    }
+
+    override func draggingExited(_ sender: NSDraggingInfo?) {
+        onTargetChanged?(false)
+    }
+
+    override func draggingEnded(_ sender: NSDraggingInfo) {
+        onTargetChanged?(false)
+    }
+
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool {
+        onTargetChanged?(false)
+
+        let pasteboard = sender.draggingPasteboard
+
+        // Try to get file URLs directly
+        if let urls = pasteboard.readObjects(forClasses: [NSURL.self], options: [
+            .urlReadingFileURLsOnly: true
+        ]) as? [URL], !urls.isEmpty {
+            onDrop?(urls)
+            return true
+        }
+
+        // Fall back: if image data was dropped (e.g. from Photos), save to temp file
+        if let image = NSImage(pasteboard: pasteboard) {
+            if let tiffData = image.tiffRepresentation,
+               let rep = NSBitmapImageRep(data: tiffData),
+               let pngData = rep.representation(using: .png, properties: [:]) {
+                let tempURL = FileManager.default.temporaryDirectory
+                    .appendingPathComponent(UUID().uuidString + ".png")
+                do {
+                    try pngData.write(to: tempURL)
+                    onDrop?([tempURL])
+                    return true
+                } catch {
+                    return false
+                }
+            }
+        }
+
+        return false
+    }
+
+    override func hitTest(_ point: NSPoint) -> NSView? {
+        // Return nil for normal mouse events so clicks pass through to the ScrollView.
+        // Drag operations use the dragging protocol methods, not hitTest.
+        return nil
     }
 }
 
