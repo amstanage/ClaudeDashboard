@@ -52,6 +52,7 @@
 		EE000001EE000001EE000001 /* CodeBlockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000001EE000001EE000002 /* CodeBlockView.swift */; };
 		EE000002EE000002EE000001 /* MessageContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000002EE000002EE000002 /* MessageContentView.swift */; };
 		EE000003EE000003EE000001 /* FileReferenceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE000003EE000003EE000002 /* FileReferenceView.swift */; };
+		FF000001FF000001FF000001 /* AttachmentChipView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF000001FF000001FF000002 /* AttachmentChipView.swift */; };
 		B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A660903372C2E4FA2CFDFC06 /* DashboardView.swift */; };
 		BA35B4918D36F6304B617A5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7801CCBC59216F26BE18F3 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -115,6 +116,7 @@
 		EE000001EE000001EE000002 /* CodeBlockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CodeBlockView.swift; sourceTree = "<group>"; };
 		EE000002EE000002EE000002 /* MessageContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageContentView.swift; sourceTree = "<group>"; };
 		EE000003EE000003EE000002 /* FileReferenceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileReferenceView.swift; sourceTree = "<group>"; };
+		FF000001FF000001FF000002 /* AttachmentChipView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentChipView.swift; sourceTree = "<group>"; };
 		CEA505924741CE7A0DFBB32F /* Claude Dashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Claude Dashboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB3A3D8937D033440C803C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -187,6 +189,7 @@
 		3A56BFAFEA8C6D5F0CC71862 /* Chat */ = {
 			isa = PBXGroup;
 			children = (
+				FF000001FF000001FF000002 /* AttachmentChipView.swift */,
 				0ABCAFEBCE7ED152F4752C65 /* ChatView.swift */,
 				EE000001EE000001EE000002 /* CodeBlockView.swift */,
 				EE000003EE000003EE000002 /* FileReferenceView.swift */,
@@ -458,6 +461,7 @@
 				EE000001EE000001EE000001 /* CodeBlockView.swift in Sources */,
 				EE000002EE000002EE000001 /* MessageContentView.swift in Sources */,
 				EE000003EE000003EE000001 /* FileReferenceView.swift in Sources */,
+				FF000001FF000001FF000001 /* AttachmentChipView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

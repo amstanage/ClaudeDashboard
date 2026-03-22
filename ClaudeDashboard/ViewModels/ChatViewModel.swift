@@ -15,6 +15,8 @@ final class ChatViewModel {
     var effortChanged: Bool = false
     var rawOutput: [String] = []
     var showTerminal: Bool = false
+    var pendingAttachments: [FileAttachment] = []
+    var attachmentError: String?
 
     private let cliService = CLIService()
     var sessionStartTime: Date?
@@ -50,18 +52,37 @@ final class ChatViewModel {
     func sendMessage() {
         let text = inputText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !text.isEmpty else { return }
-        messages.append(ChatMessage(role: .user, content: text))
+
+        let attachments = pendingAttachments
+        let model = modelChanged ? selectedModel : nil
+        let effort = effortChanged ? selectedEffort : nil
+
+        messages.append(ChatMessage(role: .user, content: text, attachments: attachments))
         inputText = ""
+        pendingAttachments = []
+        attachmentError = nil
         isWaitingForResponse = true
         messageCount += 1
         if sessionStartTime == nil {
             sessionStartTime = Date()
         }
-        cliService.sendMessage(
-            text,
-            model: modelChanged ? selectedModel : nil,
-            effort: effortChanged ? selectedEffort : nil
-        )
+
+        if !attachments.isEmpty {
+            Task {
+                let fileContents: [String] = await Task.detached {
+                    attachments.compactMap { attachment in
+                        guard let content = try? String(contentsOf: attachment.url, encoding: .utf8) else { return nil }
+                        let lang = (attachment.fileName as NSString).pathExtension
+                        return "```\(lang) (\(attachment.fileName))\n\(content)\n```"
+                    }
+                }.value
+
+                let fullText = fileContents.isEmpty ? text : fileContents.joined(separator: "\n\n") + "\n\n" + text
+                cliService.sendMessage(fullText, model: model, effort: effort)
+            }
+        } else {
+            cliService.sendMessage(text, model: model, effort: effort)
+        }
     }
 
     private var gotAssistantResponse = false
@@ -102,6 +123,64 @@ final class ChatViewModel {
         }
     }
 
+    func addAttachment(url: URL) {
+        guard pendingAttachments.count < FileAttachment.maxFileCount else {
+            attachmentError = "Maximum \(FileAttachment.maxFileCount) files per message"
+            return
+        }
+
+        guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+              let fileSize = attrs[.size] as? Int64 else {
+            attachmentError = "Cannot read file: \(url.lastPathComponent)"
+            return
+        }
+
+        guard FileAttachment.isWithinSizeLimit(bytes: fileSize) else {
+            attachmentError = "\(url.lastPathComponent) exceeds 1MB limit"
+            return
+        }
+
+        let totalSize = pendingAttachments.reduce(Int64(0)) { $0 + $1.fileSize } + fileSize
+        guard totalSize <= FileAttachment.maxTotalSize else {
+            attachmentError = "Total attachment size exceeds 5MB limit"
+            return
+        }
+
+        let fileName = url.lastPathComponent
+        let fileType = FileAttachment.fileType(for: fileName)
+
+        var thumbnailData: Data? = nil
+        if fileType == .image, let image = NSImage(contentsOf: url) {
+            let maxDim: CGFloat = 40
+            let ratio = min(maxDim / image.size.width, maxDim / image.size.height, 1.0)
+            let newSize = NSSize(width: image.size.width * ratio, height: image.size.height * ratio)
+            let thumb = NSImage(size: newSize)
+            thumb.lockFocus()
+            image.draw(in: NSRect(origin: .zero, size: newSize))
+            thumb.unlockFocus()
+            if let tiffData = thumb.tiffRepresentation,
+               let rep = NSBitmapImageRep(data: tiffData) {
+                thumbnailData = rep.representation(using: .png, properties: [:])
+            }
+        }
+
+        let attachment = FileAttachment(
+            id: UUID(),
+            url: url,
+            fileName: fileName,
+            fileType: fileType,
+            fileSize: fileSize,
+            thumbnailData: thumbnailData
+        )
+        pendingAttachments.append(attachment)
+        attachmentError = nil
+    }
+
+    func removeAttachment(_ attachment: FileAttachment) {
+        pendingAttachments.removeAll { $0.id == attachment.id }
+        attachmentError = nil
+    }
+
     func newConversation() {
         cliService.newSession()
         messages.removeAll()
@@ -112,6 +191,8 @@ final class ChatViewModel {
         messageCount = 0
         sessionStartTime = nil
         isWaitingForResponse = false
+        pendingAttachments = []
+        attachmentError = nil
     }
 
     func clearDisplay() {
