@@ -47,6 +47,8 @@
 		BB000002BB000002BB000002 /* FileAttachmentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB000002BB000002BB000003 /* FileAttachmentTests.swift */; };
 		CC000001CC000001CC000001 /* ContentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000001CC000001CC000002 /* ContentParser.swift */; };
 		CC000002CC000002CC000002 /* ContentParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000002CC000002CC000003 /* ContentParserTests.swift */; };
+		DD000001DD000001DD000001 /* SyntaxHighlighter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000001DD000001DD000002 /* SyntaxHighlighter.swift */; };
+		DD000002DD000002DD000002 /* SyntaxHighlighterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD000002DD000002DD000003 /* SyntaxHighlighterTests.swift */; };
 		B1A31160149D54C45CABE69E /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A660903372C2E4FA2CFDFC06 /* DashboardView.swift */; };
 		BA35B4918D36F6304B617A5C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9A7801CCBC59216F26BE18F3 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
@@ -105,6 +107,8 @@
 		BB000002BB000002BB000003 /* FileAttachmentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileAttachmentTests.swift; sourceTree = "<group>"; };
 		CC000001CC000001CC000002 /* ContentParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentParser.swift; sourceTree = "<group>"; };
 		CC000002CC000002CC000003 /* ContentParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentParserTests.swift; sourceTree = "<group>"; };
+		DD000001DD000001DD000002 /* SyntaxHighlighter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighter.swift; sourceTree = "<group>"; };
+		DD000002DD000002DD000003 /* SyntaxHighlighterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlighterTests.swift; sourceTree = "<group>"; };
 		CEA505924741CE7A0DFBB32F /* Claude Dashboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Claude Dashboard.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DCB3A3D8937D033440C803C7 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		E4BAD55D59287038F16012AE /* ClaudeDashboardTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ClaudeDashboardTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -137,6 +141,7 @@
 				AA000006AA000006AA000007 /* CLIEventParserTests.swift */,
 				BB000002BB000002BB000003 /* FileAttachmentTests.swift */,
 				CC000002CC000002CC000003 /* ContentParserTests.swift */,
+				DD000002DD000002DD000003 /* SyntaxHighlighterTests.swift */,
 				AA000012AA000012AA000013 /* JSONLReaderTests.swift */,
 				AA000013AA000013AA000014 /* DatabaseServiceTests.swift */,
 				AA000018AA000018AA000019 /* ChatViewModelTests.swift */,
@@ -209,6 +214,7 @@
 				AA000014AA000014AA000015 /* UsageSyncService.swift */,
 				AA000015AA000015AA000016 /* CLIService.swift */,
 				CC000001CC000001CC000002 /* ContentParser.swift */,
+				DD000001DD000001DD000002 /* SyntaxHighlighter.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -400,6 +406,7 @@
 				AA000030AA000030AA000030 /* SessionsViewModelTests.swift in Sources */,
 				BB000002BB000002BB000002 /* FileAttachmentTests.swift in Sources */,
 				CC000002CC000002CC000002 /* ContentParserTests.swift in Sources */,
+				DD000002DD000002DD000002 /* SyntaxHighlighterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -438,6 +445,7 @@
 				AA000031AA000031AA000031 /* SkillsView.swift in Sources */,
 				BB000001BB000001BB000001 /* FileAttachment.swift in Sources */,
 				CC000001CC000001CC000001 /* ContentParser.swift in Sources */,
+				DD000001DD000001DD000001 /* SyntaxHighlighter.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
