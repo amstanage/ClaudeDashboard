@@ -140,13 +140,13 @@ final class ChatViewModel {
         }
 
         guard FileAttachment.isWithinSizeLimit(bytes: fileSize) else {
-            attachmentError = "\(url.lastPathComponent) exceeds 1MB limit"
+            attachmentError = "\(url.lastPathComponent) exceeds \(FileAttachment.maxFileSize / 1_000_000)MB limit"
             return
         }
 
         let totalSize = pendingAttachments.reduce(Int64(0)) { $0 + $1.fileSize } + fileSize
         guard totalSize <= FileAttachment.maxTotalSize else {
-            attachmentError = "Total attachment size exceeds 5MB limit"
+            attachmentError = "Total attachment size exceeds \(FileAttachment.maxTotalSize / 1_000_000)MB limit"
             return
         }
 
