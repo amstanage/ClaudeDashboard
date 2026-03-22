@@ -45,7 +45,11 @@ struct ContentView: View {
         .background(.ultraThinMaterial)
         .focusedSceneValue(\.selectedTab, $selectedTab)
         .onChange(of: appViewModel.database != nil) { _, ready in
-            if ready { loadChatHistory() }
+            if ready {
+                chatViewModel.configure(database: appViewModel.database)
+                chatViewModel.onSessionCreated = { loadChatHistory() }
+                loadChatHistory()
+            }
         }
         .onChange(of: selectedTab) { _, _ in loadChatHistory() }
         .onReceive(NotificationCenter.default.publisher(for: .newConversation)) { _ in newChat() }
@@ -195,68 +199,87 @@ struct SidebarView: View {
 
 // MARK: - Full session detail view (for viewing history)
 
+private struct HistoryRow: Identifiable {
+    let id: Int
+    let isUser: Bool
+    let text: String
+    let tokens: Int?
+}
+
 struct SessionDetailFullView: View {
     let sessionId: String
-    @State private var messages: [CLIEvent] = []
-    @State private var sessionInfo: String = ""
-    private let reader = JSONLReader()
+    @State private var messages: [HistoryRow] = []
+    @State private var isLoading = false
 
     var body: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 12) {
-                if messages.isEmpty {
-                    Text("Loading conversation...")
+                if isLoading {
+                    ProgressView("Loading conversation...")
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.top, 40)
+                } else if messages.isEmpty {
+                    Text("No messages found.")
                         .foregroundStyle(.tertiary)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.top, 40)
                 } else {
-                    ForEach(Array(messages.enumerated()), id: \.offset) { _, event in
-                        if let text = event.textContent, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                            let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                            let isUser = event.type == "user"
-                            HStack {
-                                if isUser { Spacer(minLength: 80) }
-                                VStack(alignment: isUser ? .trailing : .leading, spacing: 4) {
-                                    Text(LocalizedStringKey(cleanText))
-                                        .textSelection(.enabled)
-                                        .padding(12)
-                                        .background(isUser ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
-                                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    ForEach(messages) { row in
+                        HStack {
+                            if row.isUser { Spacer(minLength: 80) }
+                            VStack(alignment: row.isUser ? .trailing : .leading, spacing: 4) {
+                                Text(row.text)
+                                    .textSelection(.enabled)
+                                    .padding(12)
+                                    .background(row.isUser ? Color.accentColor.opacity(0.1) : Color.secondary.opacity(0.05))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
 
-                                    if let tokens = event.message?.usage {
-                                        Text("\(tokens.totalTokens) tokens")
-                                            .font(.caption2)
-                                            .foregroundStyle(.tertiary)
-                                    }
+                                if let tokens = row.tokens {
+                                    Text("\(tokens) tokens")
+                                        .font(.caption2)
+                                        .foregroundStyle(.tertiary)
                                 }
-                                if !isUser { Spacer(minLength: 80) }
                             }
+                            if !row.isUser { Spacer(minLength: 80) }
                         }
                     }
                 }
             }
             .padding(16)
         }
-        .onAppear { loadMessages() }
+        .task(id: sessionId) { await loadMessages() }
     }
 
-    private func loadMessages() {
-        let claudeDir = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".claude/projects")
-        guard let projectDirs = try? FileManager.default.contentsOfDirectory(at: claudeDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return }
-        for dir in projectDirs {
-            let file = dir.appendingPathComponent("\(sessionId).jsonl")
-            if FileManager.default.fileExists(atPath: file.path) {
-                messages = (try? reader.readFile(at: file)) ?? []
-                return
+    private func loadMessages() async {
+        isLoading = true
+        messages = []
+        let sid = sessionId
+        let reader = JSONLReader()
+        let loaded: [HistoryRow] = await Task.detached {
+            let claudeDir = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".claude/projects")
+            guard let projectDirs = try? FileManager.default.contentsOfDirectory(at: claudeDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return [] }
+            for dir in projectDirs {
+                for subpath in ["", "subagents/"] {
+                    let file = dir.appendingPathComponent("\(subpath)\(sid).jsonl")
+                    if FileManager.default.fileExists(atPath: file.path) {
+                        let events: [CLIEvent] = (try? reader.readFile(at: file)) ?? []
+                        return events.enumerated().compactMap { index, event -> HistoryRow? in
+                            guard let text = event.textContent,
+                                  !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return nil }
+                            return HistoryRow(
+                                id: index,
+                                isUser: event.type == "user",
+                                text: text.trimmingCharacters(in: .whitespacesAndNewlines),
+                                tokens: event.message?.usage?.outputTokens
+                            )
+                        }
+                    }
+                }
             }
-            // Also check subagents directory
-            let subagentsDir = dir.appendingPathComponent("subagents")
-            let subFile = subagentsDir.appendingPathComponent("\(sessionId).jsonl")
-            if FileManager.default.fileExists(atPath: subFile.path) {
-                messages = (try? reader.readFile(at: subFile)) ?? []
-                return
-            }
-        }
+            return []
+        }.value
+        messages = loaded
+        isLoading = false
     }
 }
 

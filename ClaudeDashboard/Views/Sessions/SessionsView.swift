@@ -32,17 +32,14 @@ struct SessionsView: View {
                 }
             }
 
-            List {
-                ForEach(viewModel.filteredSessions) { session in
-                    DisclosureGroup(isExpanded: Binding(
-                        get: { viewModel.expandedSessionId == session.id },
-                        set: { viewModel.expandedSessionId = $0 ? session.id : nil }
-                    )) {
-                        SessionDetailView(session: session)
-                    } label: {
-                        SessionRowView(session: session)
+            List(viewModel.filteredSessions) { session in
+                SessionListRow(
+                    session: session,
+                    isExpanded: viewModel.expandedSessionId == session.id,
+                    onToggle: {
+                        viewModel.expandedSessionId = viewModel.expandedSessionId == session.id ? nil : session.id
                     }
-                }
+                )
             }
             .listStyle(.inset(alternatesRowBackgrounds: true))
         }
@@ -53,7 +50,26 @@ struct SessionsView: View {
     }
 }
 
-private struct SessionRowView: View {
+private struct SessionListRow: View {
+    let session: SessionRecord
+    let isExpanded: Bool
+    let onToggle: () -> Void
+
+    var body: some View {
+        DisclosureGroup(isExpanded: Binding(
+            get: { isExpanded },
+            set: { _ in onToggle() }
+        )) {
+            if isExpanded {
+                SessionDetailView(session: session)
+            }
+        } label: {
+            SessionRowLabel(session: session)
+        }
+    }
+}
+
+private struct SessionRowLabel: View {
     let session: SessionRecord
     private static let dateFormatter: DateFormatter = { let f = DateFormatter(); f.dateStyle = .medium; f.timeStyle = .short; return f }()
 
@@ -67,7 +83,7 @@ private struct SessionRowView: View {
             if let model = session.model {
                 Text(model.replacingOccurrences(of: "claude-", with: "").capitalized)
                     .font(.caption).padding(.horizontal, 6).padding(.vertical, 2)
-                    .background(ModelUsageEntry(model: model, totalTokens: 0).color.opacity(0.2))
+                    .background(modelColor(model).opacity(0.2))
                     .clipShape(Capsule())
             }
             VStack(alignment: .trailing, spacing: 2) {
@@ -75,6 +91,13 @@ private struct SessionRowView: View {
                 Text(session.durationFormatted).font(.caption2).foregroundStyle(.secondary)
             }
         }
+    }
+
+    private func modelColor(_ model: String) -> Color {
+        if model.contains("opus") { return .purple }
+        if model.contains("sonnet") { return .blue }
+        if model.contains("haiku") { return .green }
+        return .gray
     }
 }
 

@@ -32,7 +32,7 @@ struct JSONLReader {
                         events.append(CLIEvent(
                             type: "user",
                             message: CLIEvent.CLIMessage(role: "user", content: [CLIEvent.ContentBlock(type: "text", text: cleanContent)], usage: nil, model: nil),
-                            result: nil, subtype: nil, sessionId: nil
+                            result: nil, subtype: nil, sessionId: nil, usage: nil
                         ))
                     }
                 }
@@ -72,7 +72,7 @@ struct JSONLReader {
             events.append(CLIEvent(
                 type: eventType,
                 message: CLIEvent.CLIMessage(role: role, content: contentBlocks.isEmpty ? nil : contentBlocks, usage: usage, model: model),
-                result: nil, subtype: nil, sessionId: nil
+                result: nil, subtype: nil, sessionId: nil, usage: nil
             ))
         }
 

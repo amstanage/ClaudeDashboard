@@ -1,12 +1,20 @@
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.alexstanage.ClaudeDashboard", category: "UsageSyncService")
 
 @Observable
 final class UsageSyncService: @unchecked Sendable {
     private let reader = JSONLReader()
     private var db: DatabaseService?
     private var eventStream: FSEventStreamRef?
+    private let watchQueue = DispatchQueue(label: "com.claudedashboard.fswatcher", qos: .utility)
+    private let syncQueue = DispatchQueue(label: "com.claudedashboard.sync", qos: .utility)
     private(set) var isSyncing = false
-    private(set) var syncProgress: Double = 0
+
+    private var pendingSync = false
+    private var lastSyncTime: Date = .distantPast
+    private static let syncCooldown: TimeInterval = 10
 
     private var claudeProjectsURL: URL {
         FileManager.default.homeDirectoryForCurrentUser
@@ -17,25 +25,51 @@ final class UsageSyncService: @unchecked Sendable {
         self.db = database
     }
 
+    deinit {
+        stopWatching()
+    }
+
     func performInitialSync() async throws {
-        guard let db else { return }
+        guard let db else {
+            logger.warning("performInitialSync: no database configured")
+            return
+        }
+        guard !isSyncing else {
+            logger.info("performInitialSync: skipped, already syncing")
+            return
+        }
         isSyncing = true
-        defer { isSyncing = false }
+        logger.info("performInitialSync: started")
+        let start = CFAbsoluteTimeGetCurrent()
+
+        defer {
+            isSyncing = false
+            lastSyncTime = Date()
+            let elapsed = CFAbsoluteTimeGetCurrent() - start
+            logger.info("performInitialSync: finished in \(elapsed, format: .fixed(precision: 2))s")
+        }
 
         let fm = FileManager.default
         guard fm.fileExists(atPath: claudeProjectsURL.path) else { return }
 
-        let sessions = try reader.scanProjectsDirectory(at: claudeProjectsURL)
-        let total = Double(sessions.count)
-
-        for (index, session) in sessions.enumerated() {
-            // Skip sessions the user has deleted
-            if (try? db.isSessionHidden(id: session.id)) == true {
-                syncProgress = Double(index + 1) / total
-                continue
+        // Do heavy file scanning off the main thread
+        let url = claudeProjectsURL
+        let reader = self.reader
+        let sessions: [SessionRecord] = try await withCheckedThrowingContinuation { continuation in
+            syncQueue.async {
+                do {
+                    let result = try reader.scanProjectsDirectory(at: url)
+                    logger.info("scanProjectsDirectory: found \(result.count) sessions")
+                    continuation.resume(returning: result)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
+        }
+
+        for session in sessions {
+            if (try? db.isSessionHidden(id: session.id)) == true { continue }
             try db.insertSession(session)
-            syncProgress = Double(index + 1) / total
         }
 
         try rebuildDailyStats()
@@ -66,29 +100,69 @@ final class UsageSyncService: @unchecked Sendable {
     }
 
     func startWatching() {
-        let path = claudeProjectsURL.path as CFString
-        let pathsToWatch = [path] as CFArray
+        stopWatching()
+
+        let pathString = claudeProjectsURL.path
+        let pathsToWatch = [pathString] as NSArray as CFArray
 
         var context = FSEventStreamContext()
         context.info = Unmanaged.passUnretained(self).toOpaque()
 
-        eventStream = FSEventStreamCreate(
+        guard let stream = FSEventStreamCreate(
             nil,
-            { (_, info, numEvents, eventPaths, _, _) in
+            { (_, info, numEvents, _, _, _) in
                 guard let info else { return }
                 let service = Unmanaged<UsageSyncService>.fromOpaque(info).takeUnretainedValue()
-                Task { try? await service.handleFileChange() }
+                logger.debug("FSEvent callback: \(numEvents) events")
+                Task { @MainActor in
+                    service.scheduleSync()
+                }
             },
             &context,
             pathsToWatch,
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
-            2.0,
-            FSEventStreamCreateFlags(kFSEventStreamCreateFlagUseCFTypes | kFSEventStreamCreateFlagFileEvents)
-        )
+            5.0,
+            FSEventStreamCreateFlags(kFSEventStreamCreateFlagNone)
+        ) else {
+            logger.error("Failed to create FSEventStream")
+            return
+        }
 
-        if let stream = eventStream {
-            FSEventStreamScheduleWithRunLoop(stream, CFRunLoopGetMain(), CFRunLoopMode.defaultMode.rawValue)
-            FSEventStreamStart(stream)
+        eventStream = stream
+        FSEventStreamSetDispatchQueue(stream, watchQueue)
+        FSEventStreamStart(stream)
+        logger.info("startWatching: FSEventStream started for \(pathString)")
+    }
+
+    @MainActor
+    private func scheduleSync() {
+        let elapsed = Date().timeIntervalSince(lastSyncTime)
+        if elapsed < Self.syncCooldown {
+            guard !pendingSync else {
+                logger.debug("scheduleSync: pending sync already queued, skipping")
+                return
+            }
+            pendingSync = true
+            let delay = Self.syncCooldown - elapsed
+            logger.info("scheduleSync: cooldown active, scheduling in \(delay, format: .fixed(precision: 1))s")
+            Task.detached { [weak self] in
+                try? await Task.sleep(for: .seconds(delay))
+                guard let self else { return }
+                await MainActor.run {
+                    self.pendingSync = false
+                }
+                try? await self.performInitialSync()
+            }
+            return
+        }
+        guard !isSyncing else {
+            logger.info("scheduleSync: already syncing, marking pending")
+            pendingSync = true
+            return
+        }
+        logger.info("scheduleSync: starting sync now")
+        Task.detached { [weak self] in
+            try? await self?.performInitialSync()
         }
     }
 
@@ -98,10 +172,7 @@ final class UsageSyncService: @unchecked Sendable {
             FSEventStreamInvalidate(stream)
             FSEventStreamRelease(stream)
             eventStream = nil
+            logger.info("stopWatching: FSEventStream stopped")
         }
-    }
-
-    private func handleFileChange() async throws {
-        try await performInitialSync()
     }
 }

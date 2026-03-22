@@ -8,6 +8,7 @@ struct UsageHeatmapView: View {
     private let rows = 7
     private let cols = 52
     private let dayLabels = ["Mon", "", "Wed", "", "Fri", "", "Sun"]
+    @State private var hoveredIndex: Int?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -27,10 +28,15 @@ struct UsageHeatmapView: View {
                                 if index < data.count {
                                     let stats = data[index]
                                     let intensity = stats.intensity(max: maxTokens)
-                                    RoundedRectangle(cornerRadius: 2)
-                                        .fill(Self.colorForIntensity(intensity))
-                                        .frame(width: cellSize, height: cellSize)
-                                        .help("\(Self.dateFormatter.string(from: stats.date)): \(stats.totalTokens) tokens")
+                                    HeatmapCell(
+                                        intensity: intensity,
+                                        cellSize: cellSize,
+                                        isHovered: hoveredIndex == index,
+                                        stats: stats
+                                    )
+                                    .onHover { hovering in
+                                        hoveredIndex = hovering ? index : nil
+                                    }
                                 } else {
                                     RoundedRectangle(cornerRadius: 2).fill(Color.black)
                                         .frame(width: cellSize, height: cellSize)
@@ -60,4 +66,53 @@ struct UsageHeatmapView: View {
     private static let dateFormatter: DateFormatter = {
         let f = DateFormatter(); f.dateStyle = .medium; return f
     }()
+}
+
+private struct HeatmapCell: View {
+    let intensity: Double
+    let cellSize: CGFloat
+    let isHovered: Bool
+    let stats: DailyStats
+
+    var body: some View {
+        RoundedRectangle(cornerRadius: 2)
+            .fill(UsageHeatmapView.colorForIntensity(intensity))
+            .frame(width: cellSize, height: cellSize)
+            .scaleEffect(isHovered ? 1.8 : 1.0)
+            .zIndex(isHovered ? 1 : 0)
+            .animation(.easeOut(duration: 0.15), value: isHovered)
+            .popover(isPresented: .constant(isHovered), arrowEdge: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(Self.tooltipDateFormatter.string(from: stats.date))
+                        .font(.caption.bold())
+                        .foregroundStyle(.primary)
+                    HStack(spacing: 4) {
+                        Circle()
+                            .fill(UsageHeatmapView.colorForIntensity(intensity))
+                            .frame(width: 8, height: 8)
+                        Text(Self.formatTokens(stats.totalTokens))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                .padding(8)
+            }
+    }
+
+    private static let tooltipDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "EEEE, MMM d, yyyy"
+        return f
+    }()
+
+    private static func formatTokens(_ count: Int) -> String {
+        if count == 0 { return "No tokens" }
+        if count < 1_000 { return "\(count) tokens" }
+        if count < 1_000_000 {
+            let k = Double(count) / 1_000
+            return String(format: "%.1fK tokens", k)
+        }
+        let m = Double(count) / 1_000_000
+        return String(format: "%.1fM tokens", m)
+    }
 }

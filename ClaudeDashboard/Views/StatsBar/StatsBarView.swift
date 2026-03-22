@@ -1,11 +1,15 @@
 import SwiftUI
+import os
+
+private let statsLogger = Logger(subsystem: "com.alexstanage.ClaudeDashboard", category: "StatsBarView")
 
 struct StatsBarView: View {
     @Environment(AppViewModel.self) private var appViewModel
     @State private var now = Date()
-    private let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    private let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
 
     var body: some View {
+        let _ = statsLogger.debug("StatsBarView body evaluated")
         HStack(spacing: 20) {
             StatChip(label: "Model", value: appViewModel.currentModel)
             StatChip(label: "Effort", value: appViewModel.effortLevel)

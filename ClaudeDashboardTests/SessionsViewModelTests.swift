@@ -19,7 +19,7 @@ final class SessionsViewModelTests: XCTestCase {
         let vm = SessionsViewModel()
         vm.configure(database: db)
         await vm.loadSessions()
-        XCTAssertEqual(vm.sessions.count, 2)
+        XCTAssertEqual(vm.filteredSessions.count, 2)
     }
 
     func testSearchFilters() async throws {
@@ -27,7 +27,7 @@ final class SessionsViewModelTests: XCTestCase {
         vm.configure(database: db)
         vm.searchQuery = "Swift"
         await vm.search()
-        XCTAssertEqual(vm.sessions.count, 1)
-        XCTAssertEqual(vm.sessions[0].id, "s1")
+        XCTAssertEqual(vm.filteredSessions.count, 1)
+        XCTAssertEqual(vm.filteredSessions[0].id, "s1")
     }
 }

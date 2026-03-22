@@ -17,6 +17,14 @@ final class ChatViewModel {
 
     private let cliService = CLIService()
     var sessionStartTime: Date?
+    var onSessionCreated: (() -> Void)?
+
+    private let reader = JSONLReader()
+    private weak var database: DatabaseService?
+
+    func configure(database: DatabaseService?) {
+        self.database = database
+    }
 
     init() {
         cliService.onEvent = { [weak self] event in
@@ -34,6 +42,7 @@ final class ChatViewModel {
             if status != 0 && status != 143 && status != 137 {
                 self?.messages.append(ChatMessage(role: .assistant, content: "CLI process exited with status \(status)", isComplete: true))
             }
+            self?.refreshTokensFromSessionFile()
         }
     }
 
@@ -61,13 +70,9 @@ final class ChatViewModel {
         case "assistant":
             if let text = event.textContent, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
-                messages.append(ChatMessage(role: .assistant, content: cleanText, model: event.message?.model, tokensIn: event.message?.usage?.inputTokens, tokensOut: event.message?.usage?.outputTokens, isComplete: true))
+                messages.append(ChatMessage(role: .assistant, content: cleanText, model: event.message?.model, isComplete: true))
                 gotAssistantResponse = true
                 messageCount += 1
-            }
-            if let usage = event.message?.usage {
-                sessionInputTokens += usage.inputTokens
-                sessionOutputTokens += usage.outputTokens
             }
             if let model = event.message?.model { selectedModel = model }
             isWaitingForResponse = false
@@ -77,6 +82,16 @@ final class ChatViewModel {
                 let cleanText = text.trimmingCharacters(in: .whitespacesAndNewlines)
                 messages.append(ChatMessage(role: .assistant, content: cleanText, isComplete: true))
                 messageCount += 1
+            }
+            // Update the last assistant message with final accurate token counts from the result event
+            if let usage = event.usage, let lastIndex = messages.indices.last, messages[lastIndex].role == .assistant {
+                messages[lastIndex].tokensIn = usage.inputTokens
+                messages[lastIndex].tokensOut = usage.outputTokens
+            }
+            // Accumulate session totals from result event (has final accurate counts)
+            if let usage = event.usage {
+                sessionInputTokens += usage.inputTokens
+                sessionOutputTokens += usage.outputTokens
             }
             gotAssistantResponse = false
             isWaitingForResponse = false
@@ -99,6 +114,49 @@ final class ChatViewModel {
     func clearDisplay() {
         messages.removeAll()
         rawOutput.removeAll()
+    }
+
+    private func refreshTokensFromSessionFile() {
+        guard let sessionId = cliService.currentSessionId else { return }
+        let reader = self.reader
+        let startTime = self.sessionStartTime
+        Task.detached {
+            let claudeDir = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".claude/projects")
+            guard let projectDirs = try? FileManager.default.contentsOfDirectory(at: claudeDir, includingPropertiesForKeys: nil, options: .skipsHiddenFiles) else { return }
+            for dir in projectDirs {
+                let file = dir.appendingPathComponent("\(sessionId).jsonl")
+                if FileManager.default.fileExists(atPath: file.path) {
+                    let events = (try? reader.readFile(at: file)) ?? []
+                    let stats = reader.extractSessionStats(from: events)
+                    let projectPath = dir.lastPathComponent.replacingOccurrences(of: "-", with: "/")
+                    await MainActor.run { [stats] in
+                        self.sessionInputTokens = stats.totalInputTokens
+                        self.sessionOutputTokens = stats.totalOutputTokens
+                        self.saveSessionToDatabase(sessionId: sessionId, projectPath: projectPath, stats: stats, startTime: startTime)
+                    }
+                    return
+                }
+            }
+        }
+    }
+
+    private func saveSessionToDatabase(sessionId: String, projectPath: String, stats: SessionStats, startTime: Date?) {
+        guard let db = database else {
+            onSessionCreated?()
+            return
+        }
+        let record = SessionRecord(
+            id: sessionId,
+            projectPath: projectPath,
+            startedAt: startTime ?? Date(),
+            endedAt: Date(),
+            model: stats.model,
+            totalInputTokens: stats.totalInputTokens,
+            totalOutputTokens: stats.totalOutputTokens,
+            firstMessage: stats.firstMessage
+        )
+        try? db.insertSession(record)
+        onSessionCreated?()
     }
 
     func toggleTerminal() { showTerminal.toggle() }

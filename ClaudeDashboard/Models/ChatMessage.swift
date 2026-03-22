@@ -6,8 +6,8 @@ struct ChatMessage: Identifiable {
     var content: String
     let timestamp: Date
     let model: String?
-    let tokensIn: Int?
-    let tokensOut: Int?
+    var tokensIn: Int?
+    var tokensOut: Int?
     var isComplete: Bool
 
     enum MessageRole: String {

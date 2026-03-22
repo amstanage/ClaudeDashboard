@@ -2,10 +2,21 @@ import SwiftUI
 
 @MainActor @Observable
 final class SessionsViewModel {
-    var sessions: [SessionRecord] = []
+    private(set) var filteredSessions: [SessionRecord] = []
+    private(set) var availableModels: [String] = []
     var searchQuery: String = ""
-    var selectedModelFilter: String? = nil
     var expandedSessionId: String? = nil
+
+    var selectedModelFilter: String? = nil {
+        didSet { updateFiltered() }
+    }
+
+    private var sessions: [SessionRecord] = [] {
+        didSet {
+            availableModels = Array(Set(sessions.compactMap(\.model))).sorted()
+            updateFiltered()
+        }
+    }
 
     private var db: DatabaseService?
 
@@ -22,12 +33,11 @@ final class SessionsViewModel {
         if query.isEmpty { await loadSessions() } else { sessions = (try? db.searchSessions(query: query)) ?? [] }
     }
 
-    var filteredSessions: [SessionRecord] {
-        guard let filter = selectedModelFilter else { return sessions }
-        return sessions.filter { $0.model == filter }
-    }
-
-    var availableModels: [String] {
-        Array(Set(sessions.compactMap(\.model))).sorted()
+    private func updateFiltered() {
+        if let filter = selectedModelFilter {
+            filteredSessions = sessions.filter { $0.model == filter }
+        } else {
+            filteredSessions = sessions
+        }
     }
 }

@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let logger = Logger(subsystem: "com.alexstanage.ClaudeDashboard", category: "AppViewModel")
 
 @Observable
 final class AppViewModel {
@@ -19,13 +22,19 @@ final class AppViewModel {
         let dbURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
             .appendingPathComponent("ClaudeDashboard/usage.db")
         do {
+            logger.info("bootstrap: opening database")
             database = try DatabaseService(url: dbURL)
             syncService.configure(database: database!)
+            logger.info("bootstrap: starting initial sync")
+            let start = CFAbsoluteTimeGetCurrent()
             try await syncService.performInitialSync()
-            syncService.startWatching()
+            logger.info("bootstrap: initial sync done in \(CFAbsoluteTimeGetCurrent() - start, format: .fixed(precision: 2))s")
+            // File watching disabled for diagnostics — uncomment to re-enable
+            // syncService.startWatching()
+            logger.info("bootstrap: file watching DISABLED for diagnostics")
             loadDailyTokens()
         } catch {
-            print("Database init failed: \(error). Attempting recreation...")
+            logger.error("Database init failed: \(error)")
             try? FileManager.default.removeItem(at: dbURL)
             database = try? DatabaseService(url: dbURL)
         }

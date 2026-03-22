@@ -17,8 +17,8 @@ struct MessageBubbleView: View {
                     .if(message.role == .assistant) { view in
                         view.glassEffect(.regular.interactive(), in: .rect(cornerRadii: .init(topLeading: 16, bottomLeading: 4, bottomTrailing: 16, topTrailing: 16)))
                     }
-                if let tokens = message.tokensOut {
-                    Text("\(tokens) tokens").font(.caption2).foregroundStyle(.tertiary)
+                if let out = message.tokensOut, out > 0 {
+                    Text("\(out) tokens").font(.caption2).foregroundStyle(.tertiary)
                 }
             }
             if message.role == .assistant { Spacer(minLength: 80) }

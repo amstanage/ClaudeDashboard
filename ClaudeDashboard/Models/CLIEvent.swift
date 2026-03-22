@@ -6,9 +6,10 @@ struct CLIEvent: Codable {
     let result: String?  // Present on "result" events with the final response text
     let subtype: String? // e.g. "init", "success"
     let sessionId: String? // Present on most events
+    let usage: TokenUsage? // Present on "result" events with final accurate token counts
 
     enum CodingKeys: String, CodingKey {
-        case type, message, result, subtype
+        case type, message, result, subtype, usage
         case sessionId = "session_id"
     }
 
@@ -38,6 +39,11 @@ struct CLIEvent: Codable {
         }
 
         var totalTokens: Int { inputTokens + outputTokens }
+
+        /// Total input tokens including cached tokens (cache creation + cache read + non-cached)
+        var effectiveInputTokens: Int {
+            inputTokens + (cacheCreationInputTokens ?? 0) + (cacheReadInputTokens ?? 0)
+        }
     }
 
     var textContent: String? {

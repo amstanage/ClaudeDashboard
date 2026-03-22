@@ -21,17 +21,25 @@ final class ChatViewModelTests: XCTestCase {
 
     @MainActor func testHandleAssistantEvent() {
         let vm = ChatViewModel()
-        let event = CLIEvent(type: "assistant", message: CLIEvent.CLIMessage(
+        let assistantEvent = CLIEvent(type: "assistant", message: CLIEvent.CLIMessage(
             role: "assistant",
             content: [CLIEvent.ContentBlock(type: "text", text: "Hi there!")],
-            usage: CLIEvent.TokenUsage(inputTokens: 10, outputTokens: 5, cacheCreationInputTokens: nil, cacheReadInputTokens: nil),
+            usage: nil,
             model: "claude-opus-4-6"
-        ))
-        vm.handleCLIEvent(event)
+        ), result: nil, subtype: nil, sessionId: nil, usage: nil)
+        vm.handleCLIEvent(assistantEvent)
+        // Token counts come from the result event, not the assistant event
+        let resultEvent = CLIEvent(type: "result", message: nil,
+            result: "Hi there!", subtype: "success", sessionId: nil,
+            usage: CLIEvent.TokenUsage(inputTokens: 10, outputTokens: 5, cacheCreationInputTokens: nil, cacheReadInputTokens: nil))
+        vm.handleCLIEvent(resultEvent)
         XCTAssertEqual(vm.messages.count, 1)
         XCTAssertEqual(vm.messages[0].role, .assistant)
         XCTAssertEqual(vm.messages[0].content, "Hi there!")
-        XCTAssertEqual(vm.sessionTokens, 15)
+        XCTAssertEqual(vm.messages[0].tokensOut, 5)
+        XCTAssertEqual(vm.messages[0].tokensIn, 10)
+        XCTAssertEqual(vm.sessionInputTokens, 10)
+        XCTAssertEqual(vm.sessionOutputTokens, 5)
     }
 
     @MainActor func testNewConversationClearsMessages() {
@@ -41,12 +49,16 @@ final class ChatViewModelTests: XCTestCase {
         vm.handleCLIEvent(CLIEvent(type: "assistant", message: CLIEvent.CLIMessage(
             role: "assistant",
             content: [CLIEvent.ContentBlock(type: "text", text: "Hi")],
-            usage: CLIEvent.TokenUsage(inputTokens: 5, outputTokens: 3, cacheCreationInputTokens: nil, cacheReadInputTokens: nil),
+            usage: nil,
             model: "claude-opus-4-6"
-        )))
+        ), result: nil, subtype: nil, sessionId: nil, usage: nil))
+        vm.handleCLIEvent(CLIEvent(type: "result", message: nil,
+            result: "Hi", subtype: "success", sessionId: nil,
+            usage: CLIEvent.TokenUsage(inputTokens: 5, outputTokens: 3, cacheCreationInputTokens: nil, cacheReadInputTokens: nil)))
         XCTAssertEqual(vm.messages.count, 2)
         vm.newConversation()
         XCTAssertTrue(vm.messages.isEmpty)
-        XCTAssertEqual(vm.sessionTokens, 0)
+        XCTAssertEqual(vm.sessionInputTokens, 0)
+        XCTAssertEqual(vm.sessionOutputTokens, 0)
     }
 }
